@@ -7,14 +7,14 @@ interface Genre {
 }
 
 const genres: Genre[] = [
-  { name: "Action", count: 1250, gradient: "from-red-500/20 to-orange-500/20" },
-  { name: "Thriller", count: 890, gradient: "from-purple-500/20 to-pink-500/20" },
-  { name: "Sci-Fi", count: 670, gradient: "from-cyan/20 to-blue-500/20" },
-  { name: "Horror", count: 540, gradient: "from-gray-500/20 to-red-500/20" },
-  { name: "Comedy", count: 980, gradient: "from-yellow-500/20 to-orange-500/20" },
-  { name: "Drama", count: 1100, gradient: "from-blue-500/20 to-purple-500/20" },
-  { name: "Romance", count: 720, gradient: "from-pink-500/20 to-red-500/20" },
-  { name: "Crime", count: 650, gradient: "from-gray-500/20 to-cyan/20" },
+  { name: "Action", count: 1250, gradient: "from-pink/20 to-magenta/20" },
+  { name: "Thriller", count: 890, gradient: "from-magenta/20 to-luxury/20" },
+  { name: "Sci-Fi", count: 670, gradient: "from-pink/20 to-purple-500/20" },
+  { name: "Horror", count: 540, gradient: "from-gray-500/20 to-pink/20" },
+  { name: "Comedy", count: 980, gradient: "from-magenta/20 to-pink-500/20" },
+  { name: "Drama", count: 1100, gradient: "from-purple-500/20 to-magenta/20" },
+  { name: "Romance", count: 720, gradient: "from-pink-500/20 to-magenta/20" },
+  { name: "Crime", count: 650, gradient: "from-gray-500/20 to-pink/20" },
 ];
 
 export const GenreGrid = () => {
@@ -24,7 +24,7 @@ export const GenreGrid = () => {
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight text-foreground">Browse by Genre</h2>
-          <a href="/genres" className="text-sm font-medium text-cyan transition-colors hover:text-cyan/80">
+          <a href="/genres" className="text-sm font-medium text-pink transition-colors hover:text-pink/80">
             View All →
           </a>
         </div>
@@ -43,7 +43,7 @@ export const GenreGrid = () => {
               {/* Content */}
               <div className="relative z-10 flex flex-col items-center text-center">
                 <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-surface/50 backdrop-blur-sm">
-                  <Film className="h-6 w-6 text-cyan" />
+                  <Film className="h-6 w-6 text-pink" />
                 </div>
                 <h3 className="mb-1 text-lg font-semibold text-foreground">{genre.name}</h3>
                 <p className="text-sm text-muted-foreground">{genre.count} movies</p>

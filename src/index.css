@@ -9,63 +9,63 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Base Surfaces */
-    --background: 0 0% 6%;
-    --foreground: 0 0% 90%;
+    --background: 0 0% 4%;
+    --foreground: 0 0% 92%;
     
-    --surface: 0 0% 10%;
-    --surface-elevated: 0 0% 13%;
+    --surface: 0 0% 8%;
+    --surface-elevated: 0 0% 12%;
     
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 90%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 92%;
     
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 90%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 92%;
     
-    /* Accent Colors */
-    --primary: 190 100% 50%;
-    --primary-foreground: 0 0% 6%;
+    /* Accent Colors - Premium Pink Theme */
+    --primary: 330 100% 60%;
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 0 0% 13%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 92%;
     
-    --accent-cyan: 190 100% 50%;
-    --accent-gold: 33 48% 65%;
-    --accent-luxury: 42 100% 56%;
+    --accent-pink: 330 100% 60%;
+    --accent-magenta: 320 85% 65%;
+    --accent-luxury: 300 100% 65%;
     
     --success: 141 73% 42%;
     
     /* Text System */
     --muted: 0 0% 29%;
-    --muted-foreground: 0 0% 50%;
+    --muted-foreground: 0 0% 55%;
     
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 90%;
+    --destructive-foreground: 0 0% 92%;
     
     /* Borders & Inputs */
-    --border: 0 0% 13%;
-    --input: 0 0% 13%;
-    --ring: 190 100% 50%;
+    --border: 0 0% 15%;
+    --input: 0 0% 12%;
+    --ring: 330 100% 60%;
     
     --radius: 0.75rem;
     
     /* Glows */
-    --glow-cyan: 0 0 20px rgba(0, 217, 255, 0.3);
-    --glow-warm: 0 0 16px rgba(212, 165, 116, 0.2);
-    --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --glow-pink: 0 0 24px rgba(255, 20, 147, 0.4);
+    --glow-magenta: 0 0 20px rgba(255, 105, 180, 0.3);
+    --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
 }
 
 @layer utilities {
-  .glow-cyan {
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  .glow-pink {
+    box-shadow: 0 0 24px rgba(255, 20, 147, 0.4);
   }
   
-  .glow-warm {
-    box-shadow: 0 0 16px rgba(212, 165, 116, 0.2);
+  .glow-magenta {
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
   }
   
   .shadow-cinema {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
   
   .transition-cinema {

@@ -42,7 +42,7 @@ export const Header = () => {
         {/* Logo */}
         <div className="flex-shrink-0">
           <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
-            Movies<span className="text-cyan">Wala</span>
+            Movies<span className="text-pink">Wala</span>
           </h1>
         </div>
 
@@ -52,7 +52,7 @@ export const Header = () => {
             <a
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-foreground/80 transition-colors hover:text-cyan whitespace-nowrap"
+              className="text-sm font-medium text-foreground/80 transition-colors hover:text-pink hover:glow-pink whitespace-nowrap"
             >
               {link.name}
             </a>
@@ -68,7 +68,7 @@ export const Header = () => {
               <Input
                 type="search"
                 placeholder="Search movies..."
-                className="h-10 w-64 rounded-full border-foreground/10 bg-surface pl-10 text-foreground placeholder:text-muted-foreground focus:border-cyan focus:ring-2 focus:ring-cyan/50 focus:glow-cyan transition-all"
+                className="h-10 w-64 rounded-full border-foreground/10 bg-surface pl-10 text-foreground placeholder:text-muted-foreground focus:border-pink focus:ring-2 focus:ring-pink/50 focus:glow-pink transition-all"
               />
             </div>
           </div>
@@ -77,7 +77,7 @@ export const Header = () => {
           <Button
             variant="outline"
             size="sm"
-            className="hidden md:flex h-10 px-4 border-cyan/50 text-cyan hover:bg-cyan/10 hover:text-cyan hover:border-cyan transition-all"
+            className="hidden md:flex h-10 px-4 border-pink/50 text-pink hover:bg-pink/10 hover:text-pink hover:border-pink hover:glow-pink transition-all"
             asChild
           >
             <a href="https://t.me/movieswala" target="_blank" rel="noopener noreferrer">
@@ -90,7 +90,7 @@ export const Header = () => {
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="h-10 w-10 text-foreground/80 hover:text-cyan hover:bg-surface transition-colors"
+            className="h-10 w-10 text-foreground/80 hover:text-pink hover:bg-surface transition-colors"
           >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -99,7 +99,7 @@ export const Header = () => {
 
           {/* Mobile Search Icon */}
           <button
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-foreground/80 transition-colors hover:bg-surface hover:text-cyan lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-foreground/80 transition-colors hover:bg-surface hover:text-pink lg:hidden"
             onClick={() => setIsSearchOpen(!isSearchOpen)}
           >
             <Search className="h-5 w-5" />
@@ -115,7 +115,7 @@ export const Header = () => {
             <Input
               type="search"
               placeholder="Search movies..."
-              className="h-11 w-full rounded-full border-foreground/10 bg-surface-elevated pl-10 text-foreground placeholder:text-muted-foreground focus:border-cyan focus:ring-2 focus:ring-cyan/50 focus:glow-cyan transition-all"
+              className="h-11 w-full rounded-full border-foreground/10 bg-surface-elevated pl-10 text-foreground placeholder:text-muted-foreground focus:border-pink focus:ring-2 focus:ring-pink/50 focus:glow-pink transition-all"
             />
           </div>
           
@@ -125,7 +125,7 @@ export const Header = () => {
               <a
                 key={link.name}
                 href={link.href}
-                className="px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-cyan hover:bg-surface-elevated rounded-lg"
+                className="px-3 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-pink hover:bg-surface-elevated rounded-lg"
               >
                 {link.name}
               </a>
@@ -133,7 +133,7 @@ export const Header = () => {
             <Button
               variant="outline"
               size="sm"
-              className="mt-2 border-cyan/50 text-cyan hover:bg-cyan/10 hover:text-cyan hover:border-cyan"
+              className="mt-2 border-pink/50 text-pink hover:bg-pink/10 hover:text-pink hover:border-pink"
               asChild
             >
               <a href="https://t.me/movieswala" target="_blank" rel="noopener noreferrer">

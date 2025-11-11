@@ -25,7 +25,7 @@ export const MovieCard = ({ title, year, genre, rating }: MovieCardProps) => {
       {/* Content */}
       <div className="absolute inset-x-0 bottom-0 p-4 translate-y-4 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
         {/* Genre Badge */}
-        <Badge className="mb-2 border-cyan/50 bg-cyan/20 text-cyan">
+        <Badge className="mb-2 border-pink/50 bg-pink/20 text-pink">
           {genre}
         </Badge>
 
@@ -38,13 +38,13 @@ export const MovieCard = ({ title, year, genre, rating }: MovieCardProps) => {
         <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
           <span>{year}</span>
           <div className="flex items-center gap-1">
-            <Star className="h-3 w-3 fill-cyan text-cyan" />
+            <Star className="h-3 w-3 fill-pink text-pink" />
             <span>{rating}</span>
           </div>
         </div>
 
         {/* Download Button */}
-        <button className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan text-background shadow-lg transition-cinema hover:scale-110 hover:glow-cyan">
+        <button className="flex h-10 w-10 items-center justify-center rounded-full bg-pink text-white shadow-lg transition-cinema hover:scale-110 hover:glow-pink">
           <Download className="h-5 w-5" />
         </button>
       </div>

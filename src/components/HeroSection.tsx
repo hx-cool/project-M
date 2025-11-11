@@ -17,14 +17,14 @@ export const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         
         {/* Accent Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan/10 via-transparent to-gold/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-pink/10 via-transparent to-magenta/10" />
       </div>
 
       {/* Content */}
       <div className="container relative mx-auto flex h-full items-end px-4 pb-12">
         <div className="max-w-2xl space-y-6">
           {/* Badge */}
-          <Badge className="border-gold bg-gold/20 text-gold hover:bg-gold/30">
+          <Badge className="border-magenta bg-magenta/20 text-magenta hover:bg-magenta/30">
             Featured Release
           </Badge>
 
@@ -45,7 +45,7 @@ export const HeroSection = () => {
           {/* Rating */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
-              <Star className="h-5 w-5 fill-cyan text-cyan" />
+              <Star className="h-5 w-5 fill-pink text-pink" />
               <span className="text-lg font-bold text-foreground">8.5</span>
               <span className="text-sm text-muted-foreground">/ 10</span>
             </div>

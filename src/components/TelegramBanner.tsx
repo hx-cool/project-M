@@ -5,13 +5,13 @@ export const TelegramBanner = () => {
   return (
     <section className="py-12">
       <div className="container mx-auto px-4">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan/20 via-luxury/10 to-cyan/20 p-12 shadow-cinema">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-pink/20 via-magenta/10 to-pink/20 p-12 shadow-cinema">
           {/* Background Glow Effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan/5 to-transparent blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-pink/5 to-transparent blur-3xl" />
           
           <div className="relative z-10 flex flex-col items-center text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-cyan glow-cyan">
-              <Send className="h-8 w-8 text-background" />
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-pink glow-pink">
+              <Send className="h-8 w-8 text-white" />
             </div>
             
             <h2 className="mb-3 text-3xl font-bold tracking-tight text-foreground md:text-4xl">

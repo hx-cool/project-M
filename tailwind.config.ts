@@ -34,8 +34,8 @@ export default {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
-        cyan: "hsl(var(--accent-cyan))",
-        gold: "hsl(var(--accent-gold))",
+        pink: "hsl(var(--accent-pink))",
+        magenta: "hsl(var(--accent-magenta))",
         luxury: "hsl(var(--accent-luxury))",
         success: "hsl(var(--success))",
         destructive: {
