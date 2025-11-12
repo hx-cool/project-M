@@ -1,6 +1,7 @@
 import { Download, Star, Play, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface MovieCardProps {
   title: string;
@@ -25,7 +26,15 @@ export const MovieCard = ({
   synopsis,
   cast
 }: MovieCardProps) => {
+  const navigate = useNavigate();
   const genres = Array.isArray(genre) ? genre : [genre];
+  
+  // Generate URL-friendly ID from title
+  const movieId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  
+  const handleMoreInfo = () => {
+    navigate(`/movie/${movieId}`);
+  };
   
   return (
     <div className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-br from-background to-surface shadow-cinema transition-all duration-500 hover:scale-[1.02] hover:glow-pink hover:shadow-xl">
@@ -99,7 +108,10 @@ export const MovieCard = ({
         )}
 
         {/* More Info Link */}
-        <button className="flex items-center gap-1 text-xs text-pink/70 hover:text-pink transition-colors group/info">
+        <button 
+          onClick={handleMoreInfo}
+          className="flex items-center gap-1 text-xs text-pink/70 hover:text-pink transition-colors group/info"
+        >
           <Info className="h-3 w-3" />
           <span className="font-medium">More Info</span>
         </button>
