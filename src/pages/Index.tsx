@@ -5,9 +5,36 @@ import { TelegramBanner } from "@/components/TelegramBanner";
 import { GenreGrid } from "@/components/GenreGrid";
 
 const trendingMovies = [
-  { title: "Cyber Heist", year: "2025", genre: "Action", rating: 8.7 },
-  { title: "Silent Echo", year: "2024", genre: "Thriller", rating: 8.4 },
-  { title: "Quantum Shift", year: "2025", genre: "Sci-Fi", rating: 9.1 },
+  { 
+    title: "Cyber Heist", 
+    year: "2025", 
+    genre: ["Action", "Thriller", "Crime"], 
+    rating: 8.7,
+    quality: "WEB-DL",
+    duration: "2h 18m",
+    synopsis: "A team of elite hackers must pull off the ultimate digital heist while staying one step ahead of international law enforcement.",
+    cast: ["Ryan Gosling", "Ana de Armas", "Oscar Isaac"]
+  },
+  { 
+    title: "Silent Echo", 
+    year: "2024", 
+    genre: ["Thriller", "Mystery", "Drama"], 
+    rating: 8.4,
+    quality: "HDTC",
+    duration: "1h 58m",
+    synopsis: "A sound engineer discovers mysterious audio recordings that lead her into a dangerous conspiracy.",
+    cast: ["Emily Blunt", "Jake Gyllenhaal"]
+  },
+  { 
+    title: "Quantum Shift", 
+    year: "2025", 
+    genre: ["Sci-Fi", "Action", "Adventure"], 
+    rating: 9.1,
+    quality: "BluRay",
+    duration: "2h 35m",
+    synopsis: "When reality begins to fracture, a physicist must navigate parallel universes to prevent total collapse.",
+    cast: ["Timothée Chalamet", "Zendaya", "Benedict Cumberbatch"]
+  },
   { title: "Urban Legends", year: "2024", genre: "Horror", rating: 7.8 },
   { title: "Desert Storm", year: "2025", genre: "Action", rating: 8.5 },
   { title: "Lost Paradise", year: "2024", genre: "Drama", rating: 8.9 },

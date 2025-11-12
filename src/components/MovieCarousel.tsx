@@ -7,8 +7,12 @@ interface MovieCarouselProps {
   movies: Array<{
     title: string;
     year: string;
-    genre: string;
+    genre: string | string[];
     rating: number;
+    quality?: string;
+    duration?: string;
+    synopsis?: string;
+    cast?: string[];
   }>;
 }
 
