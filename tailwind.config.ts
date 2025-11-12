@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'Helvetica Neue', '-apple-system', 'system-ui', 'sans-serif'],
+        sans: ['Poppins', 'Inter', 'Helvetica Neue', '-apple-system', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
