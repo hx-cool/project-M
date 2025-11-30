@@ -4,17 +4,18 @@ interface Genre {
   name: string;
   count: number;
   gradient: string;
+  link: string;
 }
 
 const genres: Genre[] = [
-  { name: "Action", count: 1250, gradient: "from-pink/20 to-magenta/20" },
-  { name: "Thriller", count: 890, gradient: "from-magenta/20 to-luxury/20" },
-  { name: "Sci-Fi", count: 670, gradient: "from-pink/20 to-purple-500/20" },
-  { name: "Horror", count: 540, gradient: "from-gray-500/20 to-pink/20" },
-  { name: "Comedy", count: 980, gradient: "from-magenta/20 to-pink-500/20" },
-  { name: "Drama", count: 1100, gradient: "from-purple-500/20 to-magenta/20" },
-  { name: "Romance", count: 720, gradient: "from-pink-500/20 to-magenta/20" },
-  { name: "Crime", count: 650, gradient: "from-gray-500/20 to-pink/20" },
+  { name: "Action", count: 1250, gradient: "from-pink/20 to-magenta/20", link: "/category/action" },
+  { name: "Horror", count: 540, gradient: "from-gray-500/20 to-pink/20", link: "/category/horror" },
+  { name: "Sci-Fi", count: 670, gradient: "from-pink/20 to-purple-500/20", link: "/category/sci-fi" },
+  { name: "Comedy", count: 980, gradient: "from-magenta/20 to-pink-500/20", link: "/category/comedy" },
+  { name: "Drama", count: 1100, gradient: "from-purple-500/20 to-magenta/20", link: "/category/drama" },
+  { name: "Hindi", count: 850, gradient: "from-orange-500/20 to-pink/20", link: "/category/hindi" },
+  { name: "Web Series", count: 420, gradient: "from-blue-500/20 to-magenta/20", link: "/category/web-series" },
+  { name: "Thriller", count: 890, gradient: "from-magenta/20 to-luxury/20", link: "/category/action" },
 ];
 
 export const GenreGrid = () => {
@@ -34,7 +35,7 @@ export const GenreGrid = () => {
           {genres.map((genre) => (
             <a
               key={genre.name}
-              href={`/genre/${genre.name.toLowerCase()}`}
+              href={genre.link}
               className="group relative overflow-hidden rounded-xl bg-surface-elevated p-6 shadow-cinema transition-all hover:scale-105 hover:shadow-lg"
             >
               {/* Gradient Background */}

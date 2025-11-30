@@ -1,326 +1,669 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Star, Download, Play, Calendar, Clock, Shield } from "lucide-react";
+import { ArrowLeft, Share2, Download, Star, Clock, Eye, ChevronDown, Search, Send } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getMovieById, getRelatedMovies, generateMovieId, trendingMovies, Movie } from "@/data/movies";
 import { Header } from "@/components/Header";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MovieCarousel } from "@/components/MovieCarousel";
-
-// Mock data - in a real app, this would come from an API or database
-const movieDatabase: Record<string, any> = {
-  "cyber-heist": {
-    title: "Cyber Heist",
-    year: "2025",
-    genre: ["Action", "Thriller", "Crime"],
-    rating: 8.7,
-    quality: "WEB-DL",
-    duration: "2h 18m",
-    synopsis: "A team of elite hackers must pull off the ultimate digital heist while staying one step ahead of international law enforcement. As they penetrate the most secure financial networks in the world, they discover a conspiracy that goes far deeper than they ever imagined. With time running out and enemies closing in from all sides, the team must decide how far they're willing to go for the truth.",
-    cast: [
-      "Ryan Gosling as Jack Morrison",
-      "Ana de Armas as Sofia Chen",
-      "Oscar Isaac as Marcus Wade",
-      "Tessa Thompson as Agent Davis",
-      "Idris Elba as Victor Kane",
-      "John Boyega as Dev Patel"
-    ],
-    director: "Christopher Nolan",
-    releaseDate: "March 15, 2025",
-    trailerUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    screenshots: [
-      "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&q=80",
-      "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80",
-      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80"
-    ]
-  },
-  "silent-echo": {
-    title: "Silent Echo",
-    year: "2024",
-    genre: ["Thriller", "Mystery", "Drama"],
-    rating: 8.4,
-    quality: "HDTC",
-    duration: "1h 58m",
-    synopsis: "A sound engineer discovers mysterious audio recordings that lead her into a dangerous conspiracy involving corporate espionage and hidden technologies. As she digs deeper into the source of these enigmatic sounds, she realizes that some secrets are meant to stay buried.",
-    cast: [
-      "Emily Blunt as Sarah Collins",
-      "Jake Gyllenhaal as Dr. James Hart",
-      "Michael Shannon as Detective Moore",
-      "Rebecca Ferguson as Rachel Stone"
-    ],
-    director: "Denis Villeneuve",
-    releaseDate: "November 8, 2024",
-    trailerUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    screenshots: [
-      "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800&q=80",
-      "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&q=80",
-      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&q=80",
-      "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&q=80"
-    ]
-  },
-  "quantum-shift": {
-    title: "Quantum Shift",
-    year: "2025",
-    genre: ["Sci-Fi", "Action", "Adventure"],
-    rating: 9.1,
-    quality: "BluRay",
-    duration: "2h 35m",
-    synopsis: "When reality begins to fracture, a physicist must navigate parallel universes to prevent total collapse. Armed with groundbreaking technology and an unwavering determination, she races against time through dimensions where the laws of physics are rewritten, encountering alternate versions of herself and facing impossible choices that will determine the fate of all existence.",
-    cast: [
-      "Timothée Chalamet as Dr. Adrian Cole",
-      "Zendaya as Maya Winters",
-      "Benedict Cumberbatch as Professor Sterling",
-      "Florence Pugh as Dr. Emma Ross",
-      "Oscar Isaac as Agent Cross",
-      "Lupita Nyong'o as Commander Kane"
-    ],
-    director: "James Cameron",
-    releaseDate: "June 22, 2025",
-    trailerUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    screenshots: [
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=80",
-      "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&q=80",
-      "https://images.unsplash.com/photo-1446776709462-d6b525c57bd3?w=800&q=80",
-      "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=80"
-    ]
-  }
-};
-
-const relatedMovies = [
-  { title: "Code Red", year: "2025", genre: ["Thriller", "Action"], rating: 8.2 },
-  { title: "Midnight Drive", year: "2025", genre: ["Crime", "Drama"], rating: 8.6 },
-  { title: "Shadow Protocol", year: "2025", genre: ["Action", "Spy"], rating: 8.8 },
-  { title: "Neon Dreams", year: "2025", genre: ["Sci-Fi", "Thriller"], rating: 9.0 },
-];
+import { Footer } from "@/components/Footer";
+import { BackToTop } from "@/components/BackToTop";
+import { useSearch } from "@/contexts/SearchContext";
 
 const MovieDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
-  const movie = id ? movieDatabase[id] : null;
+  const [localSearchQuery, setLocalSearchQuery] = useState("");
+  const { setSearchQuery } = useSearch();
 
-  if (!movie) {
+  const [dbMovie, setDbMovie] = useState<Movie | null>(null);
+  const [dbScreenshots, setDbScreenshots] = useState<string[]>([]);
+  const [dbDownloads, setDbDownloads] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [synopsisExpanded, setSynopsisExpanded] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    
+    if (id) {
+      setLoading(true);
+      fetch(`http://${window.location.hostname}:3001/api/movies/${id}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Movie not found');
+          return res.json();
+        })
+        .then(foundMovie => {
+          setDbMovie({
+            title: foundMovie.title,
+            year: foundMovie.year,
+            genre: foundMovie.genres.map((g: any) => g.genre.name),
+            rating: foundMovie.rating,
+            posterUrl: foundMovie.posterUrl,
+            quality: foundMovie.quality,
+            duration: foundMovie.duration,
+            synopsis: foundMovie.synopsis,
+            cast: foundMovie.cast.map((c: any) => c.cast.name),
+            language: foundMovie.language === 'custom' ? foundMovie.customLanguage : foundMovie.language,
+            audioType: foundMovie.audioType === 'custom' ? foundMovie.customAudioType : foundMovie.audioType,
+            downloadLink: foundMovie.downloads[0]?.link,
+            releaseDate: foundMovie.releaseDate,
+            isSeries: foundMovie.isSeries,
+          });
+          setDbScreenshots(foundMovie.screenshots?.map((s: any) => s.url) || []);
+          setDbDownloads(foundMovie.downloads || []);
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+    }
+  }, [id]);
+
+  const movie = dbMovie || (id ? getMovieById(id) : null);
+
+  const handleSearch = () => {
+    (document.activeElement as HTMLElement)?.blur();
+    if (localSearchQuery.trim()) {
+      setSearchQuery(localSearchQuery.trim());
+      navigate('/');
+    }
+  };
+
+
+
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto px-4 py-20 text-center">
-          <h1 className="text-3xl font-bold text-foreground mb-4">Movie Not Found</h1>
-          <Button onClick={() => navigate("/")} variant="hero">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Home
-          </Button>
+      <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-pink mx-auto mb-4"></div>
+          <p className="text-white">Loading movie...</p>
         </div>
       </div>
     );
   }
 
+  if (!movie) {
+    return (
+      <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-white mb-4">Movie Not Found</h1>
+          <button onClick={() => navigate('/')} className="text-pink">Back to Home</button>
+        </div>
+      </div>
+    );
+  }
+
+  const genres = Array.isArray(movie.genre) ? movie.genre : [movie.genre];
+
+
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
-      <main className="pb-16">
-        {/* Hero Section with Backdrop */}
-        <div className="relative h-[60vh] overflow-hidden">
-          {/* Backdrop Image with Gradient Overlay */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${movie.screenshots[0]})` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background/60" />
-          
-          {/* Content */}
-          <div className="container relative mx-auto px-4 h-full flex items-end pb-12">
-            <div className="max-w-3xl">
-              {/* Back Button */}
-              <Button 
-                onClick={() => navigate("/")}
-                variant="ghost"
-                className="mb-6 text-muted-foreground hover:text-foreground"
+
+      {/* Category Section with Search */}
+      <div className="bg-surface/30 backdrop-blur-sm py-3">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto mb-4">
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-pink to-magenta p-px">
+                  <div className="h-full w-full rounded-2xl bg-white"></div>
+                </div>
+                <Search className="absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
+                <Input
+                  type="search"
+                  placeholder="Search for movies, web series, anime…"
+                  value={localSearchQuery}
+                  onChange={(e) => setLocalSearchQuery(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { (e.target as HTMLElement).blur(); handleSearch(); } }}
+                  className="relative z-10 h-10 md:h-16 w-full rounded-2xl bg-transparent border-0 pl-6 pr-12 text-sm md:text-lg text-black placeholder:text-gray-400 focus:outline-none transition-all"
+                />
+              </div>
+              <Button
+                size="lg"
+                onClick={handleSearch}
+                className="hidden md:flex bg-gradient-to-r from-pink to-purple-600 text-white font-bold px-8 py-4 h-8 md:h-16 rounded-lg shadow-md"
               >
-                <ArrowLeft className="h-4 w-4" />
-                Back
+                Search
               </Button>
+            </div>
+          </div>
 
-              {/* Quality Badge */}
-              {movie.quality && (
-                <div className="inline-block mb-4 bg-pink px-4 py-1.5 rounded-md shadow-lg glow-pink">
-                  <span className="text-sm font-bold text-white tracking-wide">{movie.quality}</span>
-                </div>
-              )}
+          <div className="md:hidden">
+            <div className="flex justify-center mb-4">
+              <Button className="bg-gradient-to-r from-pink to-magenta border border-pink/30 text-white font-medium px-5 py-2 rounded-xl shadow-[0_0_4px_rgba(255,0,128,0.15)] flex items-center gap-2 transition-all duration-300">
+                <Send className="h-3.5 w-3.5" />
+                Join Telegram
+              </Button>
+            </div>
 
-              {/* Title */}
-              <h1 className="text-5xl font-bold text-foreground mb-4 leading-tight">
-                {movie.title}
+            <div className="grid grid-cols-3 gap-2 mb-2.5 max-w-xs mx-auto">
+              {[
+                { name: 'Anime', link: '/category/anime' },
+                { name: 'Trending', link: '/category/trending' },
+                { name: 'K-Drama', link: '/category/k-drama' }
+              ].map((category) => (
+                <a
+                  key={category.name}
+                  href={category.link}
+                  className="px-2.5 py-1.5 bg-surface/20 border border-pink/30 text-white text-xs font-medium rounded-xl shadow-[0_0_3px_rgba(255,0,128,0.1)] hover:bg-surface/30 transition-all duration-300 text-center"
+                >
+                  {category.name}
+                </a>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
+              {[
+                { name: 'AMZN Prime', link: '/category/amazon-prime' },
+                { name: 'Netflix', link: '/category/netflix' },
+                { name: 'English', link: '/category/english' }
+              ].map((category) => (
+                <a
+                  key={category.name}
+                  href={category.link}
+                  className="px-2.5 py-1.5 bg-surface/20 border border-pink/30 text-white text-xs font-medium rounded-xl shadow-[0_0_3px_rgba(255,0,128,0.1)] hover:bg-surface/30 transition-all duration-300 text-center"
+                >
+                  {category.name}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="hidden md:flex flex-wrap gap-3 justify-center max-w-6xl mx-auto">
+            {[
+              { name: 'Action', link: '/category/action' },
+              { name: 'Horror', link: '/category/horror' },
+              { name: 'Comedy', link: '/category/comedy' },
+              { name: 'Sci-Fi', link: '/category/sci-fi' },
+              { name: 'Drama', link: '/category/drama' },
+              { name: 'Hindi', link: '/category/hindi' },
+              { name: 'Web Series', link: '/category/web-series' },
+              { name: 'Anime', link: '/category/anime' },
+              { name: 'Trending', link: '/category/trending' },
+              { name: 'K-Drama', link: '/category/k-drama' },
+              { name: 'Netflix', link: '/category/netflix' },
+              { name: 'English', link: '/category/english' }
+            ].map((category) => (
+              <a
+                key={category.name}
+                href={category.link}
+                className="px-4 py-2 bg-surface/80 backdrop-blur-sm border border-border/50 text-foreground/90 text-sm font-medium rounded-full hover:bg-pink/10 hover:border-pink hover:text-pink hover:glow-pink transition-all duration-300 hover:scale-105 inline-block"
+              >
+                {category.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full py-2">
+        <div className="relative w-full">
+          <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-pink to-transparent opacity-80"></div>
+          <div className="absolute inset-0 w-full h-0.5 bg-gradient-to-r from-transparent via-pink to-transparent blur-sm opacity-60"></div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 pt-4">
+        {/* Two Column Layout for Desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+          {/* Main Content - Left Column */}
+          <div>
+            {/* SEO Title */}
+            <div className="mb-6">
+              <h1 className="text-lg md:text-xl font-bold text-white leading-relaxed">
+                MoviesWala.is | 1080p | Download {movie.title} ({movie.year}) WEB-DL Dual Audio [Hindi-English] 480p [422MB] | 720p [1GB] | 1080p [2.6GB]
               </h1>
+            </div>
 
-              {/* Metadata */}
-              <div className="flex flex-wrap items-center gap-4 text-lg text-muted-foreground mb-6">
-                <div className="flex items-center gap-2">
-                  <Star className="h-5 w-5 fill-pink text-pink" />
-                  <span className="font-bold text-pink">{movie.rating}</span>
+            {/* SEO Description */}
+            <div className="mt-6 bg-white/[0.03] rounded-xl p-6">
+              <h3 className="text-xl font-bold text-pink mb-4">Movie Specifications</h3>
+              <p className="text-gray-300 text-sm leading-relaxed">
+                Download {movie.title} ({movie.year}) WEB-DL Full Movie (Hindi-English) 480p & 720p & 1080p Qualities. This is a Hollywood movie and Available in 480p in [422MB], 720p in [1GB] & 1080p in [2.6GB] in MKV Format. This is one of the best movie based on {genres.join(" and ")}. This Movie Is Now Available In Hindi Dubbed. This is WEB-DL Print with ORG Hindi + English Audio and English Subtitles.
+              </p>
+            </div>
+
+            {/* Movie Info */}
+            <div className="mt-6 bg-white/[0.03] rounded-xl p-6">
+              <h3 className="text-xl font-bold text-pink mb-4">Movie Info</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">IMDb Rating:</span>
+                  <span className="w-[65%] text-white">{movie.rating}/10</span>
                 </div>
-                <span>•</span>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  <span>{movie.year}</span>
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">Movie Name:</span>
+                  <span className="w-[65%] text-white">{movie.title}</span>
                 </div>
-                <span>•</span>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  <span>{movie.duration}</span>
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">Release Year:</span>
+                  <span className="w-[65%] text-white">{movie.year}</span>
                 </div>
-                <span>•</span>
-                <div className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  <span>PG-13</span>
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">Runtime:</span>
+                  <span className="w-[65%] text-white">{movie.duration || 'N/A'}</span>
+                </div>
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">Genre:</span>
+                  <span className="w-[65%] text-white">{genres.join(', ')}</span>
+                </div>
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">Language:</span>
+                  <span className="w-[65%] text-white">{movie.language || 'Hindi-English'} [{movie.audioType || 'Dual Audio'}]</span>
+                </div>
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">Subtitle:</span>
+                  <span className="w-[65%] text-white">{dbMovie?.subtitle === 'none' ? 'N/A' : (dbMovie?.subtitle || 'English')}</span>
+                </div>
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">Size:</span>
+                  <span className="w-[65%] text-white">{dbDownloads.length > 0 ? dbDownloads.map(d => d.size).filter(Boolean).join(' || ') : '422MB || 1GB || 2.6GB'}</span>
+                </div>
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">Quality:</span>
+                  <span className="w-[65%] text-white">{dbDownloads.length > 0 ? dbDownloads.map(d => d.resolution).join(' || ') : '480p || 720p || 1080p'} - {movie.quality || 'WEB-DL'}</span>
+                </div>
+                <div className="flex">
+                  <span className="w-[35%] text-gray-400">Format:</span>
+                  <span className="w-[65%] text-white">MKV</span>
                 </div>
               </div>
+            </div>
 
-              {/* Genre Tags */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {movie.genre.map((g: string, index: number) => (
-                  <span
-                    key={index}
-                    className="px-4 py-1.5 text-sm font-medium border border-pink/40 text-pink/90 rounded-full bg-pink/5"
-                  >
-                    {g}
-                  </span>
+            {/* Movie Synopsis */}
+            <div className="mt-6 bg-white/[0.03] rounded-xl p-6">
+              <h3 className="text-xl font-bold text-pink mb-4 text-center">Movie Synopsis/Plot</h3>
+              <div className="text-gray-400 text-sm leading-relaxed relative">
+                <p className={synopsisExpanded ? '' : 'line-clamp-4 md:line-clamp-none'}>
+                  {movie.synopsis || "A team of elite hackers must pull off the ultimate digital heist while staying one step ahead of international law enforcement."}
+                </p>
+                {!synopsisExpanded && (movie.synopsis || "A team of elite hackers must pull off the ultimate digital heist while staying one step ahead of international law enforcement.").length > 200 && (
+                  <div className="md:hidden text-right mt-1">
+                    <button onClick={() => setSynopsisExpanded(true)} className="text-pink font-medium">Show more</button>
+                  </div>
+                )}
+                {synopsisExpanded && (
+                  <div className="md:hidden text-right mt-1">
+                    <button onClick={() => setSynopsisExpanded(false)} className="text-pink font-medium">Show less</button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Screenshots */}
+            <div className="mt-6">
+              <h3 className="text-xl font-bold text-pink mb-4 text-center">Screenshots: (Must See Before Downloading)...</h3>
+              <div className="space-y-4">
+                {(dbScreenshots.length > 0 ? dbScreenshots : (movie.screenshots || [movie.posterUrl, movie.posterUrl, movie.posterUrl, movie.posterUrl, movie.posterUrl])).slice(0, 5).map((screenshot, index) => (
+                  <div key={index} className="w-full aspect-video">
+                    <img
+                      src={screenshot}
+                      alt={`Movie Screenshot ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 ))}
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3">
-                <Button size="lg" className="bg-pink text-white font-bold hover:bg-pink/90 hover:glow-pink shadow-lg">
-                  <Download className="h-5 w-5" />
-                  Download Movie
-                </Button>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-pink/50 bg-transparent text-pink hover:bg-pink/10 hover:border-pink font-semibold"
-                >
-                  <Play className="h-5 w-5" />
-                  Watch Trailer
-                </Button>
+            {/* Divider */}
+            <div className="my-6">
+              <div className="relative w-full">
+                <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-pink to-transparent opacity-80"></div>
+                <div className="absolute inset-0 w-full h-0.5 bg-gradient-to-r from-transparent via-pink to-transparent blur-sm opacity-60"></div>
+              </div>
+            </div>
+
+            {/* Download Options */}
+            <div className="mt-6">
+              <h3 className="text-lg font-bold text-white mb-4 text-center">{(() => {
+                const lang = movie.language || 'Hindi-English';
+                const langs = lang.split(/[-,+]/).map(l => l.trim());
+                const hasHindi = lang.includes("Hindi");
+                const hasEnglish = lang.includes("English");
+                if (hasHindi && langs.length === 1) return "** DOWNLOAD हिंदी ORG Audio (हिन्दी में) **";
+                if (hasHindi && langs.length === 2) return `** DOWNLOAD हिंदी Dubbed ORG – ${langs.find(l => !l.includes("Hindi"))} (हिन्दी में) **`;
+                if (hasEnglish && langs.length === 1) return "** DOWNLOAD English ORG Audio (English) **";
+                if (hasEnglish && langs.length === 2) return `** DOWNLOAD ORG Dual Audio – English (${lang} में) **`;
+                if (langs.length > 2) return `** DOWNLOAD ORG Multi Audio (${lang} में) **`;
+                if (langs.length === 1) return `** DOWNLOAD ORG Original Audio (${lang} में) **`;
+                return `** DOWNLOAD ORG Dual Audio (${lang} में) **`;
+              })()}</h3>
+
+              <div className="bg-white/[0.03] rounded-xl p-6 backdrop-blur-sm">
+                {dbDownloads.length > 0 ? (
+                  /* Database Downloads */
+                  <div className="space-y-6">
+                    {dbDownloads.map((download: any, idx: number) => (
+                      <div key={idx} className="pb-6 last:pb-0">
+                        <p className="text-white font-medium mb-3 text-center">
+                          {movie.title} ({movie.year}) {download.resolution} [{download.size || 'N/A'}]
+                        </p>
+                        <a
+                          href={download.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                        >
+                          Download Now
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                ) : movie.isSeries ? (
+                  /* Series Download Options with Quality Tiers */
+                  <div className="space-y-6">
+                    {movie.downloads ? (
+                      /* New quality-based downloads */
+                      <>
+                        {movie.downloads["480p"] && (
+                          <div className="pb-6 last:pb-0">
+                            <p className="text-white font-medium mb-3 text-center">
+                              {movie.title} Hindi DD5.1 WEB-DL 480p H.264 [{movie.downloads["480p"].batchSize}]
+                            </p>
+                            <div className="flex gap-3 justify-center">
+                              {movie.downloads["480p"].episode ? (
+                                <a
+                                  href={movie.downloads["480p"].episode}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                >
+                                  Single Episode
+                                </a>
+                              ) : (
+                                <button className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                                  Single Episode
+                                </button>
+                              )}
+
+                              {movie.downloads["480p"].batch ? (
+                                <a
+                                  href={movie.downloads["480p"].batch}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                >
+                                  Batch/Zip
+                                </a>
+                              ) : (
+                                <button className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                                  Batch/Zip
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {movie.downloads["720p"] && (
+                          <div className="pb-6 last:pb-0">
+                            <p className="text-white font-medium mb-3 text-center">
+                              {movie.title} Hindi DD5.1 WEB-DL 720p H.264 [{movie.downloads["720p"].batchSize}]
+                            </p>
+                            <div className="flex gap-3 justify-center">
+                              {movie.downloads["720p"].episode ? (
+                                <a
+                                  href={movie.downloads["720p"].episode}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                >
+                                  Single Episode
+                                </a>
+                              ) : (
+                                <button className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                                  Single Episode
+                                </button>
+                              )}
+
+                              {movie.downloads["720p"].batch ? (
+                                <a
+                                  href={movie.downloads["720p"].batch}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                >
+                                  Batch/Zip
+                                </a>
+                              ) : (
+                                <button className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                                  Batch/Zip
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {movie.downloads["1080p"] && (
+                          <div className="pb-6 last:pb-0">
+                            <p className="text-white font-medium mb-3 text-center">
+                              {movie.title} Hindi DD5.1 WEB-DL 1080p H.264 [{movie.downloads["1080p"].batchSize}]
+                            </p>
+                            <div className="flex gap-3 justify-center">
+                              {movie.downloads["1080p"].episode ? (
+                                <a
+                                  href={movie.downloads["1080p"].episode}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                >
+                                  Single Episode
+                                </a>
+                              ) : (
+                                <button className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                                  Single Episode
+                                </button>
+                              )}
+
+                              {movie.downloads["1080p"].batch ? (
+                                <a
+                                  href={movie.downloads["1080p"].batch}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                >
+                                  Batch/Zip
+                                </a>
+                              ) : (
+                                <button className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                                  Batch/Zip
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      /* Fallback for legacy single-link format */
+                      <div>
+                        <p className="text-white font-medium mb-3 text-center">{movie.title} ({movie.year})</p>
+                        <div className="flex gap-3 justify-center">
+                          {movie.episodeDownloadLink ? (
+                            <a
+                              href={movie.episodeDownloadLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                            >
+                              Single Episode
+                            </a>
+                          ) : (
+                            <button className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                              Single Episode
+                            </button>
+                          )}
+
+                          {movie.batchDownloadLink ? (
+                            <a
+                              href={movie.batchDownloadLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                            >
+                              Batch/Zip {movie.batchSize ? `[${movie.batchSize}]` : ''}
+                            </a>
+                          ) : (
+                            <button className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                              Batch/Zip {movie.batchSize ? `[${movie.batchSize}]` : ''}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Movie Download Options */
+                  <div className="space-y-6">
+                    <div className="pb-6">
+                      <p className="text-white font-medium mb-3 text-center">{movie.title} ({movie.year}) (Hindi-English) 480p x264 [422MB]</p>
+                      {movie.downloadLink ? (
+                        <a
+                          href={movie.downloadLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                        >
+                          Download Now
+                        </a>
+                      ) : (
+                        <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                          Download Now
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="pb-6">
+                      <p className="text-white font-medium mb-3 text-center">{movie.title} ({movie.year}) (Hindi-English) 720p 10Bit x265 [670MB]</p>
+                      {movie.downloadLink ? (
+                        <a
+                          href={movie.downloadLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                        >
+                          Download Now
+                        </a>
+                      ) : (
+                        <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                          Download Now
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="pb-6">
+                      <p className="text-white font-medium mb-3 text-center">{movie.title} ({movie.year}) (Hindi-English) 720p x264 [1GB]</p>
+                      {movie.downloadLink ? (
+                        <a
+                          href={movie.downloadLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                        >
+                          Download Now
+                        </a>
+                      ) : (
+                        <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                          Download Now
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="pb-2">
+                      <p className="text-white font-medium mb-3 text-center">{movie.title} ({movie.year}) (Hindi-English) 1080p x264 [2.6GB]</p>
+                      {movie.downloadLink ? (
+                        <a
+                          href={movie.downloadLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                        >
+                          Download Now
+                        </a>
+                      ) : (
+                        <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
+                          Download Now
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Why Choose Section */}
+            <div className="mt-6 bg-white/[0.03] rounded-[2.5rem] p-6 backdrop-blur-sm relative overflow-hidden">
+              {/* Brightness Effect */}
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-30 pointer-events-none" />
+
+              <div className="relative z-10">
+                <h3 className="text-lg md:text-2xl font-bold text-white text-center mb-4 flex items-center justify-center gap-2">
+                  🔥 Why Choose MoviesWala.is?
+                </h3>
+
+                <div className="space-y-4 mb-8">
+                  <div className="bg-white/[0.03] rounded-3xl p-4 flex items-start gap-3 hover:bg-white/[0.08] transition-all duration-300">
+                    <span className="text-green-400 text-lg md:text-xl mt-0.5">✅</span>
+                    <p className="text-gray-200 text-xs md:text-base font-medium leading-relaxed">
+                      <span className="text-white font-bold">Instant Access:</span> Direct G-Drive links for uninterrupted downloads.
+                    </p>
+                  </div>
+
+                  <div className="bg-white/[0.03] rounded-3xl p-4 flex items-start gap-3 hover:bg-white/[0.08] transition-all duration-300">
+                    <span className="text-green-400 text-lg md:text-xl mt-0.5">✅</span>
+                    <p className="text-gray-200 text-xs md:text-base font-medium leading-relaxed">
+                      <span className="text-white font-bold">100% Secure:</span> Safe, Clean, Hassle-Free & Fully encrypted.
+                    </p>
+                  </div>
+
+                  <div className="bg-white/[0.03] rounded-3xl p-4 flex items-start gap-3 hover:bg-white/[0.08] transition-all duration-300">
+                    <span className="text-green-400 text-lg md:text-xl mt-0.5">✅</span>
+                    <p className="text-gray-200 text-xs md:text-base font-medium leading-relaxed">
+                      <span className="text-white font-bold">Simple Steps:</span> Click the button, follow easy instructions, and start downloading in minutes!
+                    </p>
+                  </div>
+                </div>
+
+                <h3 className="text-lg md:text-2xl font-bold text-white text-center mb-4 flex items-center justify-center gap-2">
+                  🚀 Ready to Download?
+                </h3>
+
+                <div className="bg-white/[0.03] rounded-3xl p-4 flex items-start gap-3 hover:bg-white/[0.08] transition-all duration-300">
+                  <span className="text-yellow-400 text-lg md:text-xl mt-0.5">👉</span>
+                  <p className="text-gray-200 text-xs md:text-base font-medium leading-relaxed">
+                    Your favorite blockbusters are just 3 clicks away!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar - Right Column - Desktop Only */}
+          <div className="hidden lg:block">
+            <div className="sticky top-20 self-start z-0">
+              <h3 className="text-sm font-bold text-white mb-3 bg-dark p-3 rounded-t-lg">RECENT UPDATES</h3>
+              <div className="space-y-2">
+                {trendingMovies.slice(0, 5).map((recentMovie) => (
+                  <a
+                    key={generateMovieId(recentMovie.title)}
+                    href={`/movie/${generateMovieId(recentMovie.title)}`}
+                    className="block text-blue-400 hover:text-blue-300 text-[10px] leading-tight"
+                  >
+                    Download {recentMovie.title} ({recentMovie.year}) {recentMovie.quality || 'WEB-DL'} Dual Audio {'Hindi-English'} 480p [280MB] | 720p [1GB] | 1080p [2.7GB]
+                  </a>
+                ))}
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid lg:grid-cols-3 gap-12">
-            {/* Left Column - Main Info */}
-            <div className="lg:col-span-2 space-y-12">
-              {/* Synopsis */}
-              <section>
-                <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
-                  <div className="h-1 w-8 bg-pink rounded-full glow-pink" />
-                  Synopsis
-                </h2>
-                <p className="text-lg text-muted-foreground/90 leading-relaxed">
-                  {movie.synopsis}
-                </p>
-              </section>
-
-              {/* Trailer */}
-              <section>
-                <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
-                  <div className="h-1 w-8 bg-pink rounded-full glow-pink" />
-                  Official Trailer
-                </h2>
-                <div className="aspect-video rounded-xl overflow-hidden shadow-cinema border border-border glow-pink">
-                  <iframe
-                    className="w-full h-full"
-                    src={movie.trailerUrl}
-                    title="Movie Trailer"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-              </section>
-
-              {/* Screenshots */}
-              <section>
-                <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
-                  <div className="h-1 w-8 bg-pink rounded-full glow-pink" />
-                  Screenshots
-                </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {movie.screenshots.map((screenshot: string, index: number) => (
-                    <div
-                      key={index}
-                      className="aspect-video rounded-lg overflow-hidden shadow-cinema border border-border hover:scale-105 hover:glow-pink transition-all duration-300 cursor-pointer"
-                    >
-                      <img
-                        src={screenshot}
-                        alt={`Screenshot ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </section>
-            </div>
-
-            {/* Right Column - Sidebar Info */}
-            <div className="space-y-8">
-              {/* Cast */}
-              <section className="bg-surface rounded-xl p-6 shadow-cinema border border-border/50">
-                <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                  <div className="h-1 w-6 bg-pink rounded-full glow-pink" />
-                  Cast
-                </h2>
-                <ul className="space-y-3">
-                  {movie.cast.map((member: string, index: number) => (
-                    <li key={index} className="text-muted-foreground/90 hover:text-pink transition-colors">
-                      {member}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              {/* Additional Info */}
-              <section className="bg-surface rounded-xl p-6 shadow-cinema border border-border/50">
-                <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-                  <div className="h-1 w-6 bg-pink rounded-full glow-pink" />
-                  Details
-                </h2>
-                <dl className="space-y-3">
-                  <div>
-                    <dt className="text-sm text-muted-foreground mb-1">Director</dt>
-                    <dd className="text-foreground font-medium">{movie.director}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm text-muted-foreground mb-1">Release Date</dt>
-                    <dd className="text-foreground font-medium">{movie.releaseDate}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm text-muted-foreground mb-1">Quality</dt>
-                    <dd className="text-pink font-bold">{movie.quality}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm text-muted-foreground mb-1">Duration</dt>
-                    <dd className="text-foreground font-medium">{movie.duration}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm text-muted-foreground mb-1">Rating</dt>
-                    <dd className="flex items-center gap-2">
-                      <Star className="h-4 w-4 fill-pink text-pink" />
-                      <span className="text-pink font-bold">{movie.rating}/10</span>
-                    </dd>
-                  </div>
-                </dl>
-              </section>
-            </div>
-          </div>
-
-          {/* Related Movies */}
-          <div className="mt-16">
-            <MovieCarousel title="You May Also Like" movies={relatedMovies} />
-          </div>
-        </div>
-      </main>
+      <div className="relative z-10">
+        <Footer />
+      </div>
+      <BackToTop />
     </div>
   );
 };

@@ -1,102 +1,109 @@
-import { Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface MovieCardProps {
   title: string;
+  slug?: string;
   year: string;
   genre: string | string[];
-  rating: number;
+  rating?: number;
   posterUrl?: string;
-  quality?: string;
+  quality?: "WEB-DL" | "HD" | "4K" | "BluRay" | "HDTC";
   duration?: string;
   synopsis?: string;
   cast?: string[];
+  language?: string;
+  audioType?: "Dual Audio" | "Hindi" | "English" | "Multi Audio";
+  platform?: string;
+  season?: string;
+  releaseDate?: string;
+  size480p?: string;
+  size720p?: string;
+  size1080p?: string;
+  fromDB?: boolean;
 }
 
-export const MovieCard = ({ 
-  title, 
-  year, 
-  genre, 
-  rating, 
+export const MovieCard = ({
+  title,
+  slug,
+  year,
+  genre,
+  rating,
   posterUrl,
   quality = "HD",
   duration,
-  synopsis = "An incredible cinematic experience that will keep you on the edge of your seat from start to finish.",
-  cast
+  synopsis,
+  cast,
+  language = "Hindi-English",
+  audioType = "Dual Audio",
+  platform,
+  season,
+  releaseDate = "NOVEMBER 18, 2025",
+  size480p = "520MB",
+  size720p = "1GB",
+  size1080p = "2.1GB",
+  fromDB = false
 }: MovieCardProps) => {
   const navigate = useNavigate();
   const genres = Array.isArray(genre) ? genre : [genre];
-  
-  // Generate URL-friendly ID from title
-  const movieId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-  
+
+  // Use slug if available, otherwise generate from title
+  const movieId = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
   const handleCardClick = () => {
+    window.history.replaceState({}, '', '/');
     navigate(`/movie/${movieId}`);
   };
 
+
+
+
+
+  const fileSizes = {
+    "480p": size480p,
+    "720p": size720p,
+    "1080p": size1080p
+  };
+
   return (
-    <div 
+    <div
       onClick={handleCardClick}
-      className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#0B0B0B] to-[#1A1A1A] shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-all duration-500 hover:shadow-[0_8px_24px_rgba(255,0,122,0.3)] hover:-translate-y-2 cursor-pointer"
+      className="cursor-pointer relative w-full max-w-[200px] overflow-hidden rounded-2xl bg-gradient-to-br from-[#000000] to-[#0d0d0d] shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
     >
-      {/* Poster Section - 70% of card */}
-      <div className="relative aspect-[3/4] overflow-hidden rounded-t-2xl">
-        {/* Poster Image Placeholder */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] via-surface to-[#0B0B0B] transition-transform duration-500 group-hover:scale-103">
-          <div className="flex h-full items-center justify-center p-6">
-            <span className="text-center text-base font-bold text-muted-foreground/60 line-clamp-4">
+      {/* Poster Section */}
+      <div className="relative aspect-[2/3] overflow-hidden rounded-t-2xl">
+        {posterUrl ? (
+          <img
+            src={posterUrl}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center bg-gradient-to-br from-surface via-surface-elevated to-muted">
+            <span className="text-center text-sm font-bold text-muted-foreground/60 p-4">
               {title}
             </span>
           </div>
-        </div>
-
-        {/* Quality Tag - Floating Top Right */}
-        <div className="absolute top-3 right-3 bg-[#ff007a] px-3 py-1.5 rounded-lg shadow-lg z-10">
-          <span className="text-xs font-bold text-white tracking-wider uppercase">{quality}</span>
-        </div>
-
-        {/* Rating Badge - Bottom Left */}
-        <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/80 backdrop-blur-sm px-3 py-1.5 rounded-lg z-10">
-          <Star className="h-4 w-4 fill-[#ff007a] text-[#ff007a]" />
-          <span className="text-sm font-bold text-white">{rating}</span>
-        </div>
+        )}
+        
+        {/* Database Badge */}
+        {fromDB && (
+          <div className="absolute top-2 right-2 bg-green-500 text-white text-[8px] font-bold px-2 py-1 rounded-full">
+            DB
+          </div>
+        )}
       </div>
 
-      {/* Content Section - 30% of card */}
-      <div className="p-5 space-y-3">
+      {/* Content Section */}
+      <div className="p-3">
         {/* Release Date */}
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-          {year}
-        </p>
-
-        {/* Title */}
-        <h3 className="text-xl font-bold text-white leading-tight line-clamp-2 group-hover:text-[#ff007a] transition-colors duration-300">
-          {title}
-        </h3>
-
-        {/* Genre Badges */}
-        <div className="flex flex-wrap gap-2">
-          {genres.slice(0, 3).map((g, index) => (
-            <span
-              key={index}
-              className="px-3 py-1 text-xs font-semibold bg-[#ff007a]/10 text-[#ff007a] border border-[#ff007a]/30 rounded-full"
-            >
-              {g}
-            </span>
-          ))}
+        <div className="text-center text-white/60 text-[10px] font-medium mb-2">
+          {(releaseDate || "NOVEMBER 18, 2025").toUpperCase()}
         </div>
 
-        {/* Description */}
-        <p className="text-sm text-gray-300/80 leading-relaxed line-clamp-3">
-          {synopsis}
-        </p>
-
-        {/* Duration */}
-        {duration && (
-          <p className="text-xs text-gray-500 font-medium">
-            {duration}
-          </p>
-        )}
+        {/* Movie Details */}
+        <div className="text-white text-xs font-bold leading-[1.4] text-left">
+          Download {title} ({year}) {quality} {audioType} {language} 480p [{fileSizes["480p"]}] | 720p [{fileSizes["720p"]}] | 1080p [{fileSizes["1080p"]}]
+        </div>
       </div>
     </div>
   );

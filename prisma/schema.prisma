@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Movie {
+  id              Int      @id @default(autoincrement())
+  title           String
+  slug            String   @unique
+  year            String?
+  rating          Float?
+  duration        String?
+  synopsis        String?  @db.Text
+  posterUrl       String?
+  quality         String?
+  customQuality   String?
+  audioType       String?
+  customAudioType String?
+  language        String?
+  customLanguage  String?
+  subtitle        String?
+  customSubtitle  String?
+  platform        String?
+  isSeries        Boolean  @default(false)
+  episodeInfo     String?
+  releaseDate     String?
+  movieOrigin     String?
+  codec           String?
+  show4K          Boolean  @default(false)
+  views           Int      @default(0)
+  isEditorPick    Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  genres      MovieGenre[]
+  cast        MovieCast[]
+  downloads   Download[]
+  screenshots Screenshot[]
+  categories  MovieCategory[]
+
+  @@map("movies")
+}
+
+model Genre {
+  id     Int          @id @default(autoincrement())
+  name   String       @unique
+  movies MovieGenre[]
+
+  @@map("genres")
+}
+
+model MovieGenre {
+  movieId Int
+  genreId Int
+  movie   Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  genre   Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+
+  @@id([movieId, genreId])
+  @@map("movie_genres")
+}
+
+model CastMember {
+  id     Int         @id @default(autoincrement())
+  name   String
+  movies MovieCast[]
+
+  @@map("cast_members")
+}
+
+model MovieCast {
+  movieId Int
+  castId  Int
+  movie   Movie      @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  cast    CastMember @relation(fields: [castId], references: [id], onDelete: Cascade)
+
+  @@id([movieId, castId])
+  @@map("movie_cast")
+}
+
+model Download {
+  id            Int     @id @default(autoincrement())
+  movieId       Int
+  resolution    String
+  qualityDetail String?
+  size          String?
+  link          String? @db.Text
+  movie         Movie   @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@map("downloads")
+}
+
+model Screenshot {
+  id           Int    @id @default(autoincrement())
+  movieId      Int
+  url          String @db.Text
+  displayOrder Int?
+  movie        Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@map("screenshots")
+}
+
+model Category {
+  id     Int             @id @default(autoincrement())
+  name   String          @unique
+  slug   String          @unique
+  movies MovieCategory[]
+
+  @@map("categories")
+}
+
+model MovieCategory {
+  movieId    Int
+  categoryId Int
+  movie      Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([movieId, categoryId])
+  @@map("movie_categories")
+}
