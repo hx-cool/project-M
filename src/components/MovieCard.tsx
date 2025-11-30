@@ -102,7 +102,7 @@ export const MovieCard = ({
 
         {/* Movie Details */}
         <div className="text-white text-xs font-bold leading-[1.4] text-left">
-          Download {title} ({year}) {quality} {audioType} {language} 480p [{fileSizes["480p"]}] | 720p [{fileSizes["720p"]}] | 1080p [{fileSizes["1080p"]}]
+          Download {title} ({year}) {quality} {audioType} {'{'}{language}{'}'} 480p [{fileSizes["480p"]}] | 720p [{fileSizes["720p"]}] | 1080p [{fileSizes["1080p"]}]
         </div>
       </div>
     </div>
