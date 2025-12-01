@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 router.post('/', async (req, res) => {
   try {
     console.log('Received movie data:', req.body);
-    const { title, year, genre, rating, posterUrl, quality, customQuality, duration, synopsis, cast, language, customLanguage, subtitle, customSubtitle, audioType, customAudioType, releaseDate, movieOrigin, platform, isSeries, episodeInfo, codec, show4K, isEditorPick, screenshots, download360p, size360p, qualityDetail360p, download480p, size480pCustom, qualityDetail480p, download720p10bit, size720p10bit, qualityDetail720p10bit, download720p, size720pCustom, qualityDetail720p, download1080p, size1080pCustom, qualityDetail1080p, download1440p, size1440p, qualityDetail1440p, download2160p, size2160p, qualityDetail2160p, customDownloads } = req.body;
+    const { title, year, genre, rating, posterUrl, quality, customQuality, duration, synopsis, cast, language, customLanguage, subtitle, customSubtitle, audioType, customAudioType, releaseDate, movieOrigin, platform, isSeries, episodeInfo, codec, show4K, isEditorPick, screenshots, download360p, size360p, qualityDetail360p, download480p, size480pCustom, qualityDetail480p, download720p10bit, size720p10bit, qualityDetail720p10bit, download720p, size720pCustom, qualityDetail720p, download1080p, size1080pCustom, qualityDetail1080p, download1440p, size1440p, qualityDetail1440p, download2160p, size2160p, qualityDetail2160p, customDownloads, allDownloads } = req.body;
 
     if (!title) {
       return res.status(400).json({ success: false, error: 'Title is required' });
@@ -104,32 +104,52 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // Add download links
-    const downloads = [
-      { link: download360p, resolution: '360p', size: size360p, qualityDetail: qualityDetail360p },
-      { link: download480p, resolution: '480p', size: size480pCustom, qualityDetail: qualityDetail480p },
-      { link: download720p10bit, resolution: '720p 10Bit', size: size720p10bit, qualityDetail: qualityDetail720p10bit },
-      { link: download720p, resolution: '720p', size: size720pCustom, qualityDetail: qualityDetail720p },
-      { link: download1080p, resolution: '1080p', size: size1080pCustom, qualityDetail: qualityDetail1080p },
-      { link: download1440p, resolution: '1440p', size: size1440p, qualityDetail: qualityDetail1440p },
-      { link: download2160p, resolution: '2160p', size: size2160p, qualityDetail: qualityDetail2160p },
-    ];
-
-    for (const dl of downloads) {
-      if (dl.link) {
-        await prisma.download.create({
-          data: { movieId: movie.id, resolution: dl.resolution, size: dl.size, qualityDetail: dl.qualityDetail, link: dl.link },
-        });
-      }
-    }
-
-    // Add custom downloads
-    if (customDownloads && Array.isArray(customDownloads)) {
-      for (const custom of customDownloads) {
-        if (custom.link) {
+    // Add download links - use allDownloads if provided (new unified system)
+    if (allDownloads && Array.isArray(allDownloads)) {
+      for (const dl of allDownloads) {
+        if (dl.link) {
           await prisma.download.create({
-            data: { movieId: movie.id, resolution: custom.name, size: custom.size, qualityDetail: custom.qualityDetail || custom.name, link: custom.link },
+            data: { 
+              movieId: movie.id, 
+              resolution: dl.name, 
+              size: dl.size, 
+              qualityDetail: dl.qualityDetail, 
+              link: dl.link, 
+              order: dl.order 
+            },
           });
+        }
+      }
+    } else {
+      // Fallback to old system
+      const downloads = [
+        { link: download480p, resolution: '480p', size: size480pCustom, qualityDetail: qualityDetail480p, order: 0 },
+        { link: download720p10bit, resolution: '720p 10Bit', size: size720p10bit, qualityDetail: qualityDetail720p10bit, order: 1 },
+        { link: download720p, resolution: '720p', size: size720pCustom, qualityDetail: qualityDetail720p, order: 2 },
+        { link: download1080p10bit, resolution: '1080p 10Bit', size: size1080p10bit, qualityDetail: qualityDetail1080p10bit, order: 3 },
+        { link: download1080p, resolution: '1080p', size: size1080pCustom, qualityDetail: qualityDetail1080p, order: 4 },
+        { link: download1080p60fps, resolution: '1080p 60FPS', size: size1080p60fps, qualityDetail: qualityDetail1080p60fps, order: 5 },
+        { link: download1440p, resolution: '1440p', size: size1440p, qualityDetail: qualityDetail1440p, order: 6 },
+        { link: download2160p, resolution: '2160p', size: size2160p, qualityDetail: qualityDetail2160p, order: 7 },
+        { link: download2160p10bit, resolution: '2160p 10Bit', size: size2160p10bit, qualityDetail: qualityDetail2160p10bit, order: 8 },
+      ];
+
+      for (const dl of downloads) {
+        if (dl.link) {
+          await prisma.download.create({
+            data: { movieId: movie.id, resolution: dl.resolution, size: dl.size, qualityDetail: dl.qualityDetail, link: dl.link, order: dl.order },
+          });
+        }
+      }
+
+      // Add custom downloads
+      if (customDownloads && Array.isArray(customDownloads)) {
+        for (const custom of customDownloads) {
+          if (custom.link) {
+            await prisma.download.create({
+              data: { movieId: movie.id, resolution: custom.name, size: custom.size, qualityDetail: custom.qualityDetail || custom.name, link: custom.link, order: custom.order !== undefined ? custom.order : 999 },
+            });
+          }
         }
       }
     }
@@ -148,7 +168,7 @@ router.get('/', async (req, res) => {
       include: {
         genres: { include: { genre: true } },
         cast: { include: { cast: true } },
-        downloads: true,
+        downloads: { orderBy: { order: 'asc' } },
         screenshots: { orderBy: { displayOrder: 'asc' } },
       },
     });
@@ -186,7 +206,7 @@ router.get('/search', async (req, res) => {
       include: {
         genres: { include: { genre: true } },
         cast: { include: { cast: true } },
-        downloads: true,
+        downloads: { orderBy: { order: 'asc' } },
         screenshots: { orderBy: { displayOrder: 'asc' } },
       },
       orderBy: { createdAt: 'desc' },
@@ -199,13 +219,13 @@ router.get('/search', async (req, res) => {
   }
 });
 
-// Get ranked movies for homepage
+// Get ranked movies for homepage (5 rows × 5 cards = 25 movies)
 router.get('/ranked', async (req, res) => {
   try {
     const movies = await prisma.movie.findMany({
       include: {
         genres: { include: { genre: true } },
-        downloads: true,
+        downloads: { orderBy: { order: 'asc' } },
       },
     });
 
@@ -245,35 +265,36 @@ router.get('/ranked', async (req, res) => {
     const selected = new Set<number>();
     const result: any[] = [];
 
-    hollywood.slice(0, 8).forEach(m => { selected.add(m.id); result.push(m); });
-    indian.slice(0, 8).forEach(m => { if (!selected.has(m.id)) { selected.add(m.id); result.push(m); } });
+    hollywood.slice(0, 10).forEach(m => { selected.add(m.id); result.push(m); });
+    indian.slice(0, 10).forEach(m => { if (!selected.has(m.id)) { selected.add(m.id); result.push(m); } });
 
     for (const m of scored) {
-      if (result.length >= 24) break;
+      if (result.length >= 25) break;
       if (selected.has(m.id)) continue;
       
       const hollywoodCount = result.filter(r => r.movieOrigin === 'Hollywood').length;
       const indianCount = result.filter(r => ['Bollywood', 'South Indian'].includes(r.movieOrigin || '')).length;
       
-      if (m.movieOrigin === 'Hollywood' && hollywoodCount >= 16) continue;
-      if (['Bollywood', 'South Indian'].includes(m.movieOrigin || '') && indianCount >= 16) continue;
+      if (m.movieOrigin === 'Hollywood' && hollywoodCount >= 15) continue;
+      if (['Bollywood', 'South Indian'].includes(m.movieOrigin || '') && indianCount >= 15) continue;
       
       selected.add(m.id);
       result.push(m);
     }
 
-    const row1 = result.slice(0, 6);
-    const remaining = result.slice(6);
+    const row1 = result.slice(0, 5);
+    const remaining = result.slice(5);
     const row2_pool = remaining.filter(m => m.movieOrigin === 'Hollywood');
     const row3_pool = remaining.filter(m => ['Bollywood', 'South Indian'].includes(m.movieOrigin || ''));
     
-    const row2 = row2_pool.slice(0, 6);
-    const row3 = row3_pool.slice(0, 6);
+    const row2 = row2_pool.slice(0, 5);
+    const row3 = row3_pool.slice(0, 5);
     
     const used_in_rows = new Set([...row1, ...row2, ...row3].map(m => m.id));
-    const row4 = remaining.filter(m => !used_in_rows.has(m.id)).slice(0, 6);
+    const row4 = remaining.filter(m => !used_in_rows.has(m.id)).slice(0, 5);
+    const row5 = remaining.filter(m => !used_in_rows.has(m.id) && !row4.map(r => r.id).includes(m.id)).slice(0, 5);
 
-    res.json({ row1, row2, row3, row4 });
+    res.json({ row1, row2, row3, row4, row5 });
   } catch (error) {
     res.status(500).json({ error: 'Failed to rank movies' });
   }
@@ -300,7 +321,7 @@ router.get('/:slug', async (req, res) => {
       include: {
         genres: { include: { genre: true } },
         cast: { include: { cast: true } },
-        downloads: true,
+        downloads: { orderBy: { order: 'asc' } },
         screenshots: { orderBy: { displayOrder: 'asc' } },
       },
     });

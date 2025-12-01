@@ -9,7 +9,7 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Base Surfaces - Grey */
-    --background: 0 0% 10%;
+    --background: 0 0% 6.7%;
     /* grey */
     --foreground: 0 0% 92%;
 

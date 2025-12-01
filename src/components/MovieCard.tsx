@@ -67,15 +67,15 @@ export const MovieCard = ({
   return (
     <div
       onClick={handleCardClick}
-      className="cursor-pointer relative w-full max-w-[200px] overflow-hidden rounded-2xl bg-gradient-to-br from-[#000000] to-[#0d0d0d] shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+      className="cursor-pointer relative w-full h-[380px] sm:h-[480px] overflow-hidden rounded-2xl bg-gradient-to-br from-[#000000] to-[#0d0d0d] shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl flex flex-col"
     >
       {/* Poster Section */}
-      <div className="relative aspect-[2/3] overflow-hidden rounded-t-2xl">
+      <div className="relative h-[270px] sm:h-[340px] overflow-hidden flex-shrink-0 p-2 sm:p-4">
         {posterUrl ? (
           <img
             src={posterUrl}
             alt={title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover brightness-120 rounded-xl"
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-gradient-to-br from-surface via-surface-elevated to-muted">
@@ -94,15 +94,15 @@ export const MovieCard = ({
       </div>
 
       {/* Content Section */}
-      <div className="p-3">
+      <div className="px-2 sm:px-3 pt-1 sm:pt-0 pb-0 sm:pb-3">
         {/* Release Date */}
-        <div className="text-center text-white/60 text-[10px] font-medium mb-2">
+        <div className="text-center text-white/60 text-[10px] sm:text-[11px] font-medium mb-2">
           {(releaseDate || "NOVEMBER 18, 2025").toUpperCase()}
         </div>
 
-        {/* Movie Details */}
-        <div className="text-white text-xs font-bold leading-[1.4] text-left">
-          Download {title} ({year}) {quality} {audioType} {'{'}{language}{'}'} 480p [{fileSizes["480p"]}] | 720p [{fileSizes["720p"]}] | 1080p [{fileSizes["1080p"]}]
+        {/* Movie Details as Paragraph */}
+        <div className="text-white text-[10px] sm:text-[11px] font-semibold leading-[1.7] sm:leading-[1.8] text-left">
+          Download {title} ({year}) {audioType} {'{'}{language}{'}'} 480p [{fileSizes["480p"]}] | 720p [{fileSizes["720p"]}] | 1080p [{fileSizes["1080p"]}] {quality}
         </div>
       </div>
     </div>

@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Edit, Trash2, Plus, Film, Users, Tag, FolderOpen, BarChart3 } from "lucide-react";
+import { Edit, Trash2, Plus, Film, Users, Tag, FolderOpen, BarChart3, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Movie {
   id: number;
@@ -13,6 +14,7 @@ interface Movie {
   rating?: number;
   posterUrl?: string;
   quality?: string;
+  movieOrigin?: string;
   createdAt: string;
   genres: Array<{ genre: { name: string } }>;
   cast: Array<{ cast: { name: string } }>;
@@ -47,6 +49,11 @@ const AdminCRUD = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [newGenre, setNewGenre] = useState('');
   const [editingGenre, setEditingGenre] = useState<Genre | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterOrigin, setFilterOrigin] = useState('All');
+  const [sortBy, setSortBy] = useState('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
 
   useEffect(() => {
     if (activeTab === 'dashboard') fetchStats();
@@ -266,7 +273,7 @@ const AdminCRUD = () => {
           <TabsContent value="movies">
             <Card className="bg-gray-900 border-gray-800">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-white">All Movies ({movies.length})</CardTitle>
+                <CardTitle className="text-white">All Movies ({movies.filter(m => m.title.toLowerCase().includes(searchQuery.toLowerCase())).filter(m => filterOrigin === 'All' || m.movieOrigin === filterOrigin).length})</CardTitle>
                 <div className="flex gap-2">
                   <Button 
                     onClick={fetchMovies} 
@@ -285,9 +292,65 @@ const AdminCRUD = () => {
                 </div>
               </CardHeader>
               <CardContent>
+                <div className="mb-4 space-y-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search movies by title..."
+                      className="bg-gray-800 text-white border-gray-700 pl-10"
+                    />
+                  </div>
+                  <div className="flex gap-2 items-center flex-wrap">
+                    <span className="text-gray-400 text-sm">Filter:</span>
+                    {['All', 'Hollywood', 'Bollywood', 'South Indian', 'Korean', 'Anime'].map(origin => (
+                      <Button
+                        key={origin}
+                        size="sm"
+                        variant={filterOrigin === origin ? "default" : "outline"}
+                        onClick={() => setFilterOrigin(origin)}
+                        className={filterOrigin === origin ? "bg-pink-600 hover:bg-pink-700" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+                      >
+                        {origin}
+                      </Button>
+                    ))}
+                    <div className="ml-auto flex gap-2 items-center">
+                      <span className="text-gray-400 text-sm">Sort:</span>
+                      <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger className="w-[180px] bg-gray-800 text-white border-gray-700">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="newest">Newest First</SelectItem>
+                          <SelectItem value="oldest">Oldest First</SelectItem>
+                          <SelectItem value="title-asc">Title A-Z</SelectItem>
+                          <SelectItem value="title-desc">Title Z-A</SelectItem>
+                          <SelectItem value="rating-high">Rating High-Low</SelectItem>
+                          <SelectItem value="rating-low">Rating Low-High</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
                 <div className="grid gap-4">
-                  {movies.map((movie) => (
-                    <div key={movie.id} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
+                  {(() => {
+                    const filtered = movies
+                      .filter(movie => movie.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .filter(movie => filterOrigin === 'All' || movie.movieOrigin === filterOrigin)
+                      .sort((a, b) => {
+                        if (sortBy === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                        if (sortBy === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+                        if (sortBy === 'title-asc') return a.title.localeCompare(b.title);
+                        if (sortBy === 'title-desc') return b.title.localeCompare(a.title);
+                        if (sortBy === 'rating-high') return (b.rating || 0) - (a.rating || 0);
+                        if (sortBy === 'rating-low') return (a.rating || 0) - (b.rating || 0);
+                        return 0;
+                      });
+                    const startIndex = (currentPage - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    return filtered.slice(startIndex, endIndex).map((movie) => (
+                      <div key={movie.id} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
                       <div className="flex items-center gap-4">
                         {movie.posterUrl && (
                           <img src={movie.posterUrl} alt={movie.title} className="w-12 h-16 object-cover rounded" />
@@ -328,14 +391,64 @@ const AdminCRUD = () => {
                           </AlertDialogContent>
                         </AlertDialog>
                       </div>
-                    </div>
-                  ))}
+                      </div>
+                    ));
+                  })()}
                   {movies.length === 0 && (
                     <div className="text-center py-8 text-gray-400">
                       No movies found. Add your first movie!
                     </div>
                   )}
                 </div>
+                {(() => {
+                  const filtered = movies
+                    .filter(movie => movie.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter(movie => filterOrigin === 'All' || movie.movieOrigin === filterOrigin);
+                  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+                  if (totalPages <= 1) return null;
+                  return (
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-700">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-400">Show:</span>
+                        <Select value={itemsPerPage.toString()} onValueChange={(val) => { setItemsPerPage(Number(val)); setCurrentPage(1); }}>
+                          <SelectTrigger className="w-[100px] bg-gray-800 text-white border-gray-700">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="10">10</SelectItem>
+                            <SelectItem value="20">20</SelectItem>
+                            <SelectItem value="50">50</SelectItem>
+                            <SelectItem value="100">100</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <span className="text-sm text-gray-400">per page</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-400">
+                          Page {currentPage} of {totalPages} ({filtered.length} total)
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          disabled={currentPage === 1}
+                          className="border-gray-600 text-white hover:bg-gray-700 disabled:opacity-50"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                          disabled={currentPage === totalPages}
+                          className="border-gray-600 text-white hover:bg-gray-700 disabled:opacity-50"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           </TabsContent>

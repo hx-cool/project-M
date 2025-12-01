@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send } from "lucide-react";
+import { Send, ArrowLeft } from "lucide-react";
 import { TMDBSearch } from "@/components/TMDBSearch";
 
 const Admin = () => {
@@ -44,30 +44,19 @@ const Admin = () => {
     synopsis: "",
     cast: "",
     screenshots: "",
-    // Download Links
+    // Download Links - Unified
     codec: "none",
-    download360p: "",
-    size360p: "250MB",
-    qualityDetail360p: "WEB-DL",
-    download480p: "",
-    size480pCustom: "422MB",
-    qualityDetail480p: "WEB-DL",
-    download720p10bit: "",
-    size720p10bit: "670MB",
-    qualityDetail720p10bit: "WEB-DL x264",
-    download720p: "",
-    size720pCustom: "1GB",
-    qualityDetail720p: "WEB-DL x264",
-    download1080p: "",
-    size1080pCustom: "2.6GB",
-    qualityDetail1080p: "WEB-DL x264",
-    download1440p: "",
-    size1440p: "4.5GB",
-    qualityDetail1440p: "WEB-DL x265",
-    download2160p: "",
-    size2160p: "8GB",
-    qualityDetail2160p: "4K SDR x265",
-    customDownloads: [] as Array<{name: string, link: string, size: string, qualityDetail: string}>,
+    allDownloads: [
+      {id: '480p', name: '480p', link: '', size: '422MB', qualityDetail: 'WEB-DL', order: 0, isCustom: false},
+      {id: '720p10bit', name: '720p 10Bit', link: '', size: '670MB', qualityDetail: 'WEB-DL x264', order: 1, isCustom: false},
+      {id: '720p', name: '720p', link: '', size: '1GB', qualityDetail: 'WEB-DL x264', order: 2, isCustom: false},
+      {id: '1080p10bit', name: '1080p 10Bit', link: '', size: '2GB', qualityDetail: 'WEB-DL x265', order: 3, isCustom: false},
+      {id: '1080p', name: '1080p', link: '', size: '2.6GB', qualityDetail: 'WEB-DL x264', order: 4, isCustom: false},
+      {id: '1080p60fps', name: '1080p 60FPS', link: '', size: '3.5GB', qualityDetail: 'WEB-DL x264', order: 5, isCustom: false},
+      {id: '1440p', name: '1440p', link: '', size: '4.5GB', qualityDetail: 'WEB-DL x265', order: 6, isCustom: false},
+      {id: '2160p', name: '2160p', link: '', size: '8GB', qualityDetail: '4K SDR x265', order: 7, isCustom: false},
+      {id: '2160p10bit', name: '2160p 10Bit', link: '', size: '10GB', qualityDetail: '4K HDR x265', order: 8, isCustom: false},
+    ] as Array<{id: string, name: string, link: string, size: string, qualityDetail: string, order: number, isCustom: boolean}>,
   });
 
   useEffect(() => {
@@ -97,6 +86,20 @@ const Admin = () => {
     try {
       const response = await fetch(`http://${window.location.hostname}:3001/api/admin/movies/${movieId}`);
       const movie = await response.json();
+      
+      const predefinedIds = ['480p', '720p 10Bit', '720p', '1080p 10Bit', '1080p', '1080p 60FPS', '1440p', '2160p', '2160p 10Bit'];
+      const allDownloads = [
+        {id: '480p', name: '480p', link: movie.downloads?.find((d: any) => d.resolution === '480p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '480p')?.size || '422MB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '480p')?.qualityDetail || 'WEB-DL', order: movie.downloads?.find((d: any) => d.resolution === '480p')?.order ?? 0, isCustom: false},
+        {id: '720p10bit', name: '720p 10Bit', link: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.size || '670MB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.qualityDetail || 'WEB-DL x264', order: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.order ?? 1, isCustom: false},
+        {id: '720p', name: '720p', link: movie.downloads?.find((d: any) => d.resolution === '720p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '720p')?.size || '1GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '720p')?.qualityDetail || 'WEB-DL x264', order: movie.downloads?.find((d: any) => d.resolution === '720p')?.order ?? 2, isCustom: false},
+        {id: '1080p10bit', name: '1080p 10Bit', link: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.size || '2GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.qualityDetail || 'WEB-DL x265', order: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.order ?? 3, isCustom: false},
+        {id: '1080p', name: '1080p', link: movie.downloads?.find((d: any) => d.resolution === '1080p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1080p')?.size || '2.6GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1080p')?.qualityDetail || 'WEB-DL x264', order: movie.downloads?.find((d: any) => d.resolution === '1080p')?.order ?? 4, isCustom: false},
+        {id: '1080p60fps', name: '1080p 60FPS', link: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.size || '3.5GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.qualityDetail || 'WEB-DL x264', order: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.order ?? 5, isCustom: false},
+        {id: '1440p', name: '1440p', link: movie.downloads?.find((d: any) => d.resolution === '1440p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1440p')?.size || '4.5GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1440p')?.qualityDetail || 'WEB-DL x265', order: movie.downloads?.find((d: any) => d.resolution === '1440p')?.order ?? 6, isCustom: false},
+        {id: '2160p', name: '2160p', link: movie.downloads?.find((d: any) => d.resolution === '2160p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '2160p')?.size || '8GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '2160p')?.qualityDetail || '4K SDR x265', order: movie.downloads?.find((d: any) => d.resolution === '2160p')?.order ?? 7, isCustom: false},
+        {id: '2160p10bit', name: '2160p 10Bit', link: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.size || '10GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.qualityDetail || '4K HDR x265', order: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.order ?? 8, isCustom: false},
+        ...movie.downloads?.filter((d: any) => !predefinedIds.includes(d.resolution)).map((d: any, idx: number) => ({id: `custom-${idx}`, name: d.resolution, link: d.link, qualityDetail: d.qualityDetail || '', size: d.size, order: d.order ?? 999, isCustom: true})) || []
+      ].sort((a, b) => a.order - b.order);
       
       setFormData({
         title: movie.title || "",
@@ -128,28 +131,7 @@ const Admin = () => {
         cast: movie.cast?.map((c: any) => c.cast.name).join(', ') || "",
         screenshots: movie.screenshots?.map((s: any) => s.url).join(', ') || "",
         codec: movie.codec || "none",
-        download360p: movie.downloads?.find((d: any) => d.resolution === '360p')?.link || "",
-        size360p: movie.downloads?.find((d: any) => d.resolution === '360p')?.size || "250MB",
-        qualityDetail360p: movie.downloads?.find((d: any) => d.resolution === '360p')?.qualityDetail || "WEB-DL",
-        download480p: movie.downloads?.find((d: any) => d.resolution === '480p')?.link || "",
-        size480pCustom: movie.downloads?.find((d: any) => d.resolution === '480p')?.size || "422MB",
-        qualityDetail480p: movie.downloads?.find((d: any) => d.resolution === '480p')?.qualityDetail || "WEB-DL",
-        download720p10bit: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.link || "",
-        size720p10bit: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.size || "670MB",
-        qualityDetail720p10bit: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.qualityDetail || "WEB-DL x264",
-        download720p: movie.downloads?.find((d: any) => d.resolution === '720p')?.link || "",
-        size720pCustom: movie.downloads?.find((d: any) => d.resolution === '720p')?.size || "1GB",
-        qualityDetail720p: movie.downloads?.find((d: any) => d.resolution === '720p')?.qualityDetail || "WEB-DL x264",
-        download1080p: movie.downloads?.find((d: any) => d.resolution === '1080p')?.link || "",
-        size1080pCustom: movie.downloads?.find((d: any) => d.resolution === '1080p')?.size || "2.6GB",
-        qualityDetail1080p: movie.downloads?.find((d: any) => d.resolution === '1080p')?.qualityDetail || "WEB-DL x264",
-        download1440p: movie.downloads?.find((d: any) => d.resolution === '1440p')?.link || "",
-        size1440p: movie.downloads?.find((d: any) => d.resolution === '1440p')?.size || "4.5GB",
-        qualityDetail1440p: movie.downloads?.find((d: any) => d.resolution === '1440p')?.qualityDetail || "WEB-DL x265",
-        download2160p: movie.downloads?.find((d: any) => d.resolution === '2160p')?.link || "",
-        size2160p: movie.downloads?.find((d: any) => d.resolution === '2160p')?.size || "8GB",
-        qualityDetail2160p: movie.downloads?.find((d: any) => d.resolution === '2160p')?.qualityDetail || "4K SDR x265",
-        customDownloads: movie.downloads?.filter((d: any) => !['360p', '480p', '720p 10Bit', '720p', '1080p', '1440p', '2160p'].includes(d.resolution)).map((d: any) => ({ name: d.resolution, link: d.link, qualityDetail: d.qualityDetail || "", size: d.size })) || [],
+        allDownloads,
       });
     } catch (error) {
       console.error('Failed to load movie for editing:', error);
@@ -159,30 +141,61 @@ const Admin = () => {
   useEffect(() => {
     const baseQuality = formData.quality === "custom" ? formData.customQuality : formData.quality;
     const codecMap: Record<string, Record<string, string>> = {
-      "none": {"360p": baseQuality, "480p": baseQuality, "720p10bit": baseQuality, "720p": baseQuality, "1080p": baseQuality, "1440p": baseQuality, "2160p": `4K ${baseQuality}`},
-      "x264": {"360p": `${baseQuality} x264`, "480p": `${baseQuality} x264`, "720p10bit": `${baseQuality} x264`, "720p": `${baseQuality} x264`, "1080p": `${baseQuality} x264`, "1440p": `${baseQuality} x264`, "2160p": `4K ${baseQuality} x264`},
-      "x265": {"360p": `${baseQuality} x265`, "480p": `${baseQuality} x265`, "720p10bit": `10Bit x265`, "720p": `${baseQuality} x265`, "1080p": `${baseQuality} x265`, "1440p": `${baseQuality} x265`, "2160p": `4K ${baseQuality} x265`},
-      "H.264": {"360p": `${baseQuality} H.264`, "480p": `${baseQuality} H.264`, "720p10bit": `${baseQuality} H.264`, "720p": `${baseQuality} H.264`, "1080p": `${baseQuality} H.264`, "1440p": `${baseQuality} H.264`, "2160p": `4K ${baseQuality} H.264`},
-      "H.265": {"360p": `${baseQuality} H.265`, "480p": `${baseQuality} H.265`, "720p10bit": `10Bit H.265`, "720p": `${baseQuality} H.265`, "1080p": `${baseQuality} H.265`, "1440p": `${baseQuality} H.265`, "2160p": `4K ${baseQuality} H.265`},
-      "HEVC": {"360p": `${baseQuality} HEVC`, "480p": `${baseQuality} HEVC`, "720p10bit": `10Bit HEVC`, "720p": `${baseQuality} HEVC`, "1080p": `${baseQuality} HEVC`, "1440p": `${baseQuality} HEVC`, "2160p": `4K ${baseQuality} HEVC`},
+      "none": {"480p": baseQuality, "720p10bit": baseQuality, "720p": baseQuality, "1080p10bit": baseQuality, "1080p": baseQuality, "1080p60fps": baseQuality, "1440p": baseQuality, "2160p": `4K ${baseQuality}`, "2160p10bit": `4K ${baseQuality}`},
+      "x264": {"480p": `${baseQuality} x264`, "720p10bit": `${baseQuality} x264`, "720p": `${baseQuality} x264`, "1080p10bit": `10Bit x264`, "1080p": `${baseQuality} x264`, "1080p60fps": `60FPS x264`, "1440p": `${baseQuality} x264`, "2160p": `4K ${baseQuality} x264`, "2160p10bit": `4K 10Bit x264`},
+      "x265": {"480p": `${baseQuality} x265`, "720p10bit": `10Bit x265`, "720p": `${baseQuality} x265`, "1080p10bit": `10Bit x265`, "1080p": `${baseQuality} x265`, "1080p60fps": `60FPS x265`, "1440p": `${baseQuality} x265`, "2160p": `4K ${baseQuality} x265`, "2160p10bit": `4K HDR x265`},
+      "H.264": {"480p": `${baseQuality} H.264`, "720p10bit": `${baseQuality} H.264`, "720p": `${baseQuality} H.264`, "1080p10bit": `10Bit H.264`, "1080p": `${baseQuality} H.264`, "1080p60fps": `60FPS H.264`, "1440p": `${baseQuality} H.264`, "2160p": `4K ${baseQuality} H.264`, "2160p10bit": `4K 10Bit H.264`},
+      "H.265": {"480p": `${baseQuality} H.265`, "720p10bit": `10Bit H.265`, "720p": `${baseQuality} H.265`, "1080p10bit": `10Bit H.265`, "1080p": `${baseQuality} H.265`, "1080p60fps": `60FPS H.265`, "1440p": `${baseQuality} H.265`, "2160p": `4K ${baseQuality} H.265`, "2160p10bit": `4K HDR H.265`},
+      "HEVC": {"480p": `${baseQuality} HEVC`, "720p10bit": `10Bit HEVC`, "720p": `${baseQuality} HEVC`, "1080p10bit": `10Bit HEVC`, "1080p": `${baseQuality} HEVC`, "1080p60fps": `60FPS HEVC`, "1440p": `${baseQuality} HEVC`, "2160p": `4K ${baseQuality} HEVC`, "2160p10bit": `4K HDR HEVC`},
     };
     const details = codecMap[formData.codec] || codecMap["none"];
     setFormData(prev => ({
       ...prev,
-      qualityDetail360p: details["360p"],
-      qualityDetail480p: details["480p"],
-      qualityDetail720p10bit: details["720p10bit"],
-      qualityDetail720p: details["720p"],
-      qualityDetail1080p: details["1080p"],
-      qualityDetail1440p: details["1440p"],
-      qualityDetail2160p: details["2160p"],
+      allDownloads: prev.allDownloads.map(dl => {
+        if (dl.isCustom) return dl;
+        return {...dl, qualityDetail: details[dl.id] || dl.qualityDetail};
+      })
     }));
   }, [formData.quality, formData.customQuality, formData.codec]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Submitting form data:', formData);
+    // Convert unified downloads back to separate fields
+    const submitData = {
+      ...formData,
+      allDownloads: formData.allDownloads,
+      download480p: formData.allDownloads.find(d => d.id === '480p')?.link || '',
+      size480pCustom: formData.allDownloads.find(d => d.id === '480p')?.size || '422MB',
+      qualityDetail480p: formData.allDownloads.find(d => d.id === '480p')?.qualityDetail || 'WEB-DL',
+      download720p10bit: formData.allDownloads.find(d => d.id === '720p10bit')?.link || '',
+      size720p10bit: formData.allDownloads.find(d => d.id === '720p10bit')?.size || '670MB',
+      qualityDetail720p10bit: formData.allDownloads.find(d => d.id === '720p10bit')?.qualityDetail || 'WEB-DL x264',
+      download720p: formData.allDownloads.find(d => d.id === '720p')?.link || '',
+      size720pCustom: formData.allDownloads.find(d => d.id === '720p')?.size || '1GB',
+      qualityDetail720p: formData.allDownloads.find(d => d.id === '720p')?.qualityDetail || 'WEB-DL x264',
+      download1080p10bit: formData.allDownloads.find(d => d.id === '1080p10bit')?.link || '',
+      size1080p10bit: formData.allDownloads.find(d => d.id === '1080p10bit')?.size || '2GB',
+      qualityDetail1080p10bit: formData.allDownloads.find(d => d.id === '1080p10bit')?.qualityDetail || 'WEB-DL x265',
+      download1080p: formData.allDownloads.find(d => d.id === '1080p')?.link || '',
+      size1080pCustom: formData.allDownloads.find(d => d.id === '1080p')?.size || '2.6GB',
+      qualityDetail1080p: formData.allDownloads.find(d => d.id === '1080p')?.qualityDetail || 'WEB-DL x264',
+      download1080p60fps: formData.allDownloads.find(d => d.id === '1080p60fps')?.link || '',
+      size1080p60fps: formData.allDownloads.find(d => d.id === '1080p60fps')?.size || '3.5GB',
+      qualityDetail1080p60fps: formData.allDownloads.find(d => d.id === '1080p60fps')?.qualityDetail || 'WEB-DL x264',
+      download1440p: formData.allDownloads.find(d => d.id === '1440p')?.link || '',
+      size1440p: formData.allDownloads.find(d => d.id === '1440p')?.size || '4.5GB',
+      qualityDetail1440p: formData.allDownloads.find(d => d.id === '1440p')?.qualityDetail || 'WEB-DL x265',
+      download2160p: formData.allDownloads.find(d => d.id === '2160p')?.link || '',
+      size2160p: formData.allDownloads.find(d => d.id === '2160p')?.size || '8GB',
+      qualityDetail2160p: formData.allDownloads.find(d => d.id === '2160p')?.qualityDetail || '4K SDR x265',
+      download2160p10bit: formData.allDownloads.find(d => d.id === '2160p10bit')?.link || '',
+      size2160p10bit: formData.allDownloads.find(d => d.id === '2160p10bit')?.size || '10GB',
+      qualityDetail2160p10bit: formData.allDownloads.find(d => d.id === '2160p10bit')?.qualityDetail || '4K HDR x265',
+      customDownloads: formData.allDownloads.filter(d => d.isCustom).map(d => ({name: d.name, link: d.link, size: d.size, qualityDetail: d.qualityDetail, order: d.order})),
+    };
+    
+    console.log('Submitting form data:', submitData);
     
     try {
       const url = isEditMode 
@@ -193,7 +206,7 @@ const Admin = () => {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submitData),
       });
       
       const data = await response.json();
@@ -274,9 +287,19 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-20 px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-8">
-          Admin Panel - {isEditMode ? 'Edit Movie' : 'Add Movie'}
-        </h1>
+        <div className="flex items-center gap-4 mb-8">
+          <Button 
+            onClick={() => window.location.href = '/admin-crud?tab=movies'} 
+            variant="outline" 
+            className="border-gray-600 text-white hover:bg-gray-700"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to CRUD Panel
+          </Button>
+          <h1 className="text-4xl font-bold text-white">
+            Admin Panel - {isEditMode ? 'Edit Movie' : 'Add Movie'}
+          </h1>
+        </div>
         
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Form */}
@@ -637,229 +660,97 @@ const Admin = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <Label className="text-white text-xs">360p Link</Label>
-                        <Input
-                          value={formData.download360p}
-                          onChange={(e) => setFormData({ ...formData, download360p: e.target.value })}
-                          placeholder="Download link"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
+                    <Label className="text-white text-xs mb-2 block">All Downloads - Drag to Reorder</Label>
+                    {formData.allDownloads.map((dl, idx) => (
+                      <div 
+                        key={dl.id} 
+                        draggable
+                        onDragStart={(e) => {
+                          e.dataTransfer.effectAllowed = 'move';
+                          e.dataTransfer.setData('text/html', idx.toString());
+                          (e.target as HTMLElement).style.opacity = '0.4';
+                        }}
+                        onDragEnd={(e) => {
+                          (e.target as HTMLElement).style.opacity = '1';
+                        }}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = 'move';
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          const dragIdx = parseInt(e.dataTransfer.getData('text/html'));
+                          if (dragIdx !== idx) {
+                            const updated = [...formData.allDownloads];
+                            const [draggedItem] = updated.splice(dragIdx, 1);
+                            updated.splice(idx, 0, draggedItem);
+                            updated.forEach((item, i) => item.order = i);
+                            setFormData({ ...formData, allDownloads: updated });
+                          }
+                        }}
+                        className="grid grid-cols-[auto_1fr_1fr_1fr_1fr_auto] gap-2 mb-2 cursor-move hover:bg-gray-800/50 p-1 rounded"
+                      >
+                        <div className="flex items-center text-gray-500 text-lg cursor-grab active:cursor-grabbing">⋮⋮</div>
+                        <Input 
+                          value={dl.name} 
+                          onChange={(e) => { 
+                            const updated = [...formData.allDownloads]; 
+                            updated[idx].name = e.target.value; 
+                            setFormData({ ...formData, allDownloads: updated }); 
+                          }} 
+                          placeholder="Quality" 
+                          className="bg-gray-800 text-white border-gray-700 text-xs" 
+                          disabled={!dl.isCustom}
                         />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Quality Detail</Label>
-                        <Input
-                          value={formData.qualityDetail360p}
-                          onChange={(e) => setFormData({ ...formData, qualityDetail360p: e.target.value })}
-                          placeholder="WEB-DL"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
+                        <Input 
+                          value={dl.link} 
+                          onChange={(e) => { 
+                            const updated = [...formData.allDownloads]; 
+                            updated[idx].link = e.target.value; 
+                            setFormData({ ...formData, allDownloads: updated }); 
+                          }} 
+                          placeholder="Link" 
+                          className="bg-gray-800 text-white border-gray-700 text-xs" 
                         />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Size</Label>
-                        <Input
-                          value={formData.size360p}
-                          onChange={(e) => setFormData({ ...formData, size360p: e.target.value })}
-                          placeholder="250MB"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
+                        <Input 
+                          value={dl.qualityDetail} 
+                          onChange={(e) => { 
+                            const updated = [...formData.allDownloads]; 
+                            updated[idx].qualityDetail = e.target.value; 
+                            setFormData({ ...formData, allDownloads: updated }); 
+                          }} 
+                          placeholder="Quality Detail" 
+                          className="bg-gray-800 text-white border-gray-700 text-xs" 
                         />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <Label className="text-white text-xs">480p Link</Label>
-                        <Input
-                          value={formData.download480p}
-                          onChange={(e) => setFormData({ ...formData, download480p: e.target.value })}
-                          placeholder="Download link"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
+                        <Input 
+                          value={dl.size} 
+                          onChange={(e) => { 
+                            const updated = [...formData.allDownloads]; 
+                            updated[idx].size = e.target.value; 
+                            setFormData({ ...formData, allDownloads: updated }); 
+                          }} 
+                          placeholder="Size" 
+                          className="bg-gray-800 text-white border-gray-700 text-xs" 
                         />
+                        {dl.isCustom ? (
+                          <button 
+                            type="button" 
+                            onClick={() => setFormData({ ...formData, allDownloads: formData.allDownloads.filter((_, i) => i !== idx) })} 
+                            className="text-red-500 text-xs hover:text-red-400"
+                          >✕</button>
+                        ) : (
+                          <div className="w-4"></div>
+                        )}
                       </div>
-                      <div>
-                        <Label className="text-white text-xs">Quality Detail</Label>
-                        <Input
-                          value={formData.qualityDetail480p}
-                          onChange={(e) => setFormData({ ...formData, qualityDetail480p: e.target.value })}
-                          placeholder="WEB-DL"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Size</Label>
-                        <Input
-                          value={formData.size480pCustom}
-                          onChange={(e) => setFormData({ ...formData, size480pCustom: e.target.value })}
-                          placeholder="422MB"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <Label className="text-white text-xs">720p 10Bit Link</Label>
-                        <Input
-                          value={formData.download720p10bit}
-                          onChange={(e) => setFormData({ ...formData, download720p10bit: e.target.value })}
-                          placeholder="Download link"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Quality Detail</Label>
-                        <Input
-                          value={formData.qualityDetail720p10bit}
-                          onChange={(e) => setFormData({ ...formData, qualityDetail720p10bit: e.target.value })}
-                          placeholder="WEB-DL x264"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Size</Label>
-                        <Input
-                          value={formData.size720p10bit}
-                          onChange={(e) => setFormData({ ...formData, size720p10bit: e.target.value })}
-                          placeholder="670MB"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <Label className="text-white text-xs">720p Link</Label>
-                        <Input
-                          value={formData.download720p}
-                          onChange={(e) => setFormData({ ...formData, download720p: e.target.value })}
-                          placeholder="Download link"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Quality Detail</Label>
-                        <Input
-                          value={formData.qualityDetail720p}
-                          onChange={(e) => setFormData({ ...formData, qualityDetail720p: e.target.value })}
-                          placeholder="WEB-DL x264"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Size</Label>
-                        <Input
-                          value={formData.size720pCustom}
-                          onChange={(e) => setFormData({ ...formData, size720pCustom: e.target.value })}
-                          placeholder="1GB"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <Label className="text-white text-xs">1080p Link</Label>
-                        <Input
-                          value={formData.download1080p}
-                          onChange={(e) => setFormData({ ...formData, download1080p: e.target.value })}
-                          placeholder="Download link"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Quality Detail</Label>
-                        <Input
-                          value={formData.qualityDetail1080p}
-                          onChange={(e) => setFormData({ ...formData, qualityDetail1080p: e.target.value })}
-                          placeholder="WEB-DL x264"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Size</Label>
-                        <Input
-                          value={formData.size1080pCustom}
-                          onChange={(e) => setFormData({ ...formData, size1080pCustom: e.target.value })}
-                          placeholder="2.6GB"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <Label className="text-white text-xs">1440p (2K) Link</Label>
-                        <Input
-                          value={formData.download1440p}
-                          onChange={(e) => setFormData({ ...formData, download1440p: e.target.value })}
-                          placeholder="Download link"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Quality Detail</Label>
-                        <Input
-                          value={formData.qualityDetail1440p}
-                          onChange={(e) => setFormData({ ...formData, qualityDetail1440p: e.target.value })}
-                          placeholder="WEB-DL x265"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Size</Label>
-                        <Input
-                          value={formData.size1440p}
-                          onChange={(e) => setFormData({ ...formData, size1440p: e.target.value })}
-                          placeholder="4.5GB"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <Label className="text-white text-xs">2160p (4K) Link</Label>
-                        <Input
-                          value={formData.download2160p}
-                          onChange={(e) => setFormData({ ...formData, download2160p: e.target.value })}
-                          placeholder="Download link"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Quality Detail</Label>
-                        <Input
-                          value={formData.qualityDetail2160p}
-                          onChange={(e) => setFormData({ ...formData, qualityDetail2160p: e.target.value })}
-                          placeholder="4K SDR x265"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-white text-xs">Size</Label>
-                        <Input
-                          value={formData.size2160p}
-                          onChange={(e) => setFormData({ ...formData, size2160p: e.target.value })}
-                          placeholder="8GB"
-                          className="bg-gray-800 text-white border-gray-700 text-xs"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="border-t border-gray-700 pt-3 mt-3">
-                      <Label className="text-white text-xs mb-2 block">Custom Quality (Add Multiple)</Label>
-                      {formData.customDownloads.map((custom, idx) => (
-                        <div key={idx} className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 mb-2">
-                          <Input value={custom.name} onChange={(e) => { const updated = [...formData.customDownloads]; updated[idx].name = e.target.value; setFormData({ ...formData, customDownloads: updated }); }} placeholder="720p HEVC" className="bg-gray-800 text-white border-gray-700 text-xs" />
-                          <Input value={custom.link} onChange={(e) => { const updated = [...formData.customDownloads]; updated[idx].link = e.target.value; setFormData({ ...formData, customDownloads: updated }); }} placeholder="Link" className="bg-gray-800 text-white border-gray-700 text-xs" />
-                          <Input value={custom.qualityDetail} onChange={(e) => { const updated = [...formData.customDownloads]; updated[idx].qualityDetail = e.target.value; setFormData({ ...formData, customDownloads: updated }); }} placeholder="WEB-DL x264" className="bg-gray-800 text-white border-gray-700 text-xs" />
-                          <Input value={custom.size} onChange={(e) => { const updated = [...formData.customDownloads]; updated[idx].size = e.target.value; setFormData({ ...formData, customDownloads: updated }); }} placeholder="Size" className="bg-gray-800 text-white border-gray-700 text-xs" />
-                          <button type="button" onClick={() => setFormData({ ...formData, customDownloads: formData.customDownloads.filter((_, i) => i !== idx) })} className="text-red-500 text-xs">✕</button>
-                        </div>
-                      ))}
-                      <button type="button" onClick={() => setFormData({ ...formData, customDownloads: [...formData.customDownloads, {name: "", link: "", qualityDetail: "", size: ""}] })} className="text-pink text-xs mt-1">+ Add Custom Quality</button>
-                    </div>
+                    ))}
+                    <button 
+                      type="button" 
+                      onClick={() => setFormData({ 
+                        ...formData, 
+                        allDownloads: [...formData.allDownloads, {id: `custom-${Date.now()}`, name: "", link: "", qualityDetail: "", size: "", order: formData.allDownloads.length, isCustom: true}] 
+                      })} 
+                      className="text-pink text-xs mt-1 hover:text-pink-400"
+                    >+ Add Custom Quality</button>
                   </div>
                 </div>
 
@@ -878,7 +769,8 @@ const Admin = () => {
           </Card>
 
           {/* Previews */}
-          <div className="lg:col-span-1 space-y-8">
+          <div className="lg:col-span-1 overflow-y-auto" style={{ maxHeight: formHeight ? `${formHeight}px` : 'calc(100vh - 200px)' }}>
+            <div className="space-y-8 pr-2">
             {/* Card Preview */}
             <div>
               <h3 className="text-white font-bold mb-4 text-center">Card Preview</h3>
@@ -898,7 +790,7 @@ const Admin = () => {
                       {(formData.releaseDate || "NOVEMBER 18, 2025").toUpperCase()}
                     </div>
                     <div className="text-white text-xs font-bold leading-[1.4] text-left">
-                      Download {formData.title || "Movie Title"} {formData.episodeInfo && `${formData.episodeInfo} `}({formData.year || "2025"}) {formData.platform && formData.platform !== "none" && `${formData.platform}-`}{formData.quality === "custom" ? formData.customQuality : formData.quality} {(() => { const audio = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; const lang = formData.language === "custom" ? formData.customLanguage : formData.language; return audio === lang ? `{${lang}}` : `${audio} {${lang}}`; })()} 480p [{formData.size480pCustom}] | 720p [{formData.size720pCustom}] | 1080p [{formData.size1080pCustom}]{formData.show4K ? " | 2160p 4K" : ""}
+                      Download {formData.title || "Movie Title"} {formData.episodeInfo && `${formData.episodeInfo} `}({formData.year || "2025"}) {formData.platform && formData.platform !== "none" && `${formData.platform}-`}{formData.quality === "custom" ? formData.customQuality : formData.quality} {(() => { const audio = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; const lang = formData.language === "custom" ? formData.customLanguage : formData.language; return audio === lang ? `{${lang}}` : `${audio} {${lang}}`; })()} {formData.allDownloads.filter(d => d.link).slice(0, 3).map(d => `${d.name} [${d.size}]`).join(' | ')}{formData.show4K ? " | 2160p 4K" : ""}
                     </div>
                   </div>
                 </div>
@@ -908,16 +800,16 @@ const Admin = () => {
             {/* Detail Page Preview */}
             <div className="flex-1">
               <h3 className="text-white font-bold mb-4">Detail Page Preview</h3>
-              <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 overflow-y-auto" style={{ maxHeight: formHeight ? `${formHeight}px` : 'auto' }}>
+              <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
                 <div className="space-y-4 text-xs">
                   <div className="text-white font-bold">
-                    MoviesWala.is | 1080p | Download {formData.title || "Movie Title"} ({formData.year || "2025"}) {formData.quality === "custom" ? formData.customQuality : formData.quality} {(() => { const audio = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; const lang = formData.language === "custom" ? formData.customLanguage : formData.language; return audio === lang ? `{${lang}}` : `${audio} {${lang}}`; })()} 480p [{formData.size480pCustom}] | 720p [{formData.size720pCustom}] | 1080p [{formData.size1080pCustom}]{formData.show4K ? " | 2160p 4K" : ""}
+                    MoviesWala.is | 1080p | Download {formData.title || "Movie Title"} ({formData.year || "2025"}) {formData.quality === "custom" ? formData.customQuality : formData.quality} {(() => { const audio = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; const lang = formData.language === "custom" ? formData.customLanguage : formData.language; return audio === lang ? `{${lang}}` : `${audio} {${lang}}`; })()} {formData.allDownloads.filter(d => d.link).slice(0, 3).map(d => `${d.name} [${d.size}]`).join(' | ')}{formData.show4K ? " | 2160p 4K" : ""}
                   </div>
 
                   <div className="bg-white/[0.03] rounded-lg p-3">
                     <h3 className="text-pink font-bold mb-2">Movie Specifications</h3>
                     <p className="text-gray-300 text-[10px] leading-relaxed">
-                      Download {formData.title || "Movie Title"} ({formData.year || "2025"}) {formData.quality === "custom" ? formData.customQuality : formData.quality} Full Movie ({formData.language === "custom" ? formData.customLanguage : formData.language}) {(() => { const qualities = [formData.download360p && '360p', formData.download480p && '480p', formData.download720p10bit && '720p 10Bit', formData.download720p && '720p', formData.download1080p && '1080p', formData.download1440p && '1440p', formData.download2160p && '2160p', ...formData.customDownloads.filter(c => c.link).map(c => c.name)].filter(Boolean); return qualities.length > 1 ? qualities.slice(0, -1).join(', ') + ' & ' + qualities.slice(-1) : qualities.join('') || '480p, 720p & 1080p'; })()} Qualities. This is a {formData.movieOrigin} movie and Available {(() => { const sizes = [formData.download360p && `in 360p in [${formData.size360p}]`, formData.download480p && `480p in [${formData.size480pCustom}]`, formData.download720p10bit && `720p 10Bit in [${formData.size720p10bit}]`, formData.download720p && `720p in [${formData.size720pCustom}]`, formData.download1080p && `1080p in [${formData.size1080pCustom}]`, formData.download1440p && `1440p in [${formData.size1440p}]`, formData.download2160p && `2160p in [${formData.size2160p}]`, ...formData.customDownloads.filter(c => c.link).map(c => `${c.name} in [${c.size}]`)].filter(Boolean); return sizes.length > 1 ? sizes.slice(0, -1).join(', ') + ' & ' + sizes.slice(-1) : sizes.join('') || 'in 480p in [422MB], 720p in [1GB] & 1080p in [2.6GB]'; })()} in MKV Format. This Movie Is Now Available In {formData.language === "custom" ? formData.customLanguage : formData.language}. This is {formData.quality === "custom" ? formData.customQuality : formData.quality} Print with {formData.language === "custom" ? formData.customLanguage : formData.language} Audio{formData.subtitle !== "none" ? ` and ${formData.subtitle === "custom" ? formData.customSubtitle : formData.subtitle} Subtitles` : ""}.
+                      Download {formData.title || "Movie Title"} ({formData.year || "2025"}) {formData.quality === "custom" ? formData.customQuality : formData.quality} Full Movie ({formData.language === "custom" ? formData.customLanguage : formData.language}) {(() => { const qualities = formData.allDownloads.filter(d => d.link).map(d => d.name); return qualities.length > 1 ? qualities.slice(0, -1).join(', ') + ' & ' + qualities.slice(-1) : qualities.join('') || '480p, 720p & 1080p'; })()} Qualities. This is a {formData.movieOrigin} movie and Available {(() => { const sizes = formData.allDownloads.filter(d => d.link).map(d => `${d.name} in [${d.size}]`); return sizes.length > 1 ? sizes.slice(0, -1).join(', ') + ' & ' + sizes.slice(-1) : sizes.join('') || 'in 480p in [422MB], 720p in [1GB] & 1080p in [2.6GB]'; })()} in MKV Format. This Movie Is Now Available In {formData.language === "custom" ? formData.customLanguage : formData.language}. This is {formData.quality === "custom" ? formData.customQuality : formData.quality} Print with {formData.language === "custom" ? formData.customLanguage : formData.language} Audio{formData.subtitle !== "none" ? ` and ${formData.subtitle === "custom" ? formData.customSubtitle : formData.subtitle} Subtitles` : ""}.
                     </p>
                   </div>
 
@@ -931,8 +823,8 @@ const Admin = () => {
                       <div className="flex"><span className="w-[35%] text-gray-400">Genre:</span><span className="text-white">{formData.genre || "N/A"}</span></div>
                       <div className="flex"><span className="w-[35%] text-gray-400">Language:</span><span className="text-white">{formData.language === "custom" ? formData.customLanguage : formData.language} [{formData.audioType === "custom" ? formData.customAudioType : formData.audioType}]</span></div>
                       <div className="flex"><span className="w-[35%] text-gray-400">Subtitle:</span><span className="text-white">{formData.subtitle === "custom" ? formData.customSubtitle : formData.subtitle === "none" ? "N/A" : formData.subtitle}</span></div>
-                      <div className="flex"><span className="w-[35%] text-gray-400">Size:</span><span className="text-white">{(() => { const sizes = [formData.download480p && formData.size480pCustom, formData.download720p && formData.size720pCustom, formData.download1080p && formData.size1080pCustom].filter(Boolean); return sizes.join(' || ') || '422MB || 1GB || 2.6GB'; })()}</span></div>
-                      <div className="flex"><span className="w-[35%] text-gray-400">Quality:</span><span className="text-white">{[formData.download360p && '360p', formData.download480p && '480p', formData.download720p10bit && '720p 10Bit', formData.download720p && '720p', formData.download1080p && '1080p', formData.download1440p && '1440p', formData.download2160p && '2160p', ...formData.customDownloads.filter(c => c.link).map(c => c.name)].filter(Boolean).join(' || ') || '480p || 720p || 1080p'} - {formData.quality === "custom" ? formData.customQuality : formData.quality}</span></div>
+                      <div className="flex"><span className="w-[35%] text-gray-400">Size:</span><span className="text-white">{(() => { const sizes = formData.allDownloads.filter(d => d.link).map(d => d.size); return sizes.join(' || ') || '422MB || 1GB || 2.6GB'; })()}</span></div>
+                      <div className="flex"><span className="w-[35%] text-gray-400">Quality:</span><span className="text-white">{formData.allDownloads.filter(d => d.link).map(d => d.name).join(' || ') || '480p || 720p || 1080p'} - {formData.quality === "custom" ? formData.customQuality : formData.quality}</span></div>
                     </div>
                   </div>
 
@@ -975,51 +867,9 @@ const Admin = () => {
                       return `DOWNLOAD ORG Dual Audio (${lang} में)`;
                     })()}</h3>
                     <div className="space-y-4">
-                      {formData.download360p && (
-                        <div>
-                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} 360p {formData.qualityDetail360p} [{formData.size360p}]</p>
-                          <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
-                        </div>
-                      )}
-                      {formData.download480p && (
-                        <div>
-                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} 480p {formData.qualityDetail480p} [{formData.size480pCustom}]</p>
-                          <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
-                        </div>
-                      )}
-                      {formData.download720p10bit && (
-                        <div>
-                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} 720p 10Bit {formData.qualityDetail720p10bit} [{formData.size720p10bit}]</p>
-                          <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
-                        </div>
-                      )}
-                      {formData.download720p && (
-                        <div>
-                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} 720p {formData.qualityDetail720p} [{formData.size720pCustom}]</p>
-                          <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
-                        </div>
-                      )}
-                      {formData.download1080p && (
-                        <div>
-                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} 1080p {formData.qualityDetail1080p} [{formData.size1080pCustom}]</p>
-                          <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
-                        </div>
-                      )}
-                      {formData.download1440p && (
-                        <div>
-                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} 1440p {formData.qualityDetail1440p} [{formData.size1440p}]</p>
-                          <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
-                        </div>
-                      )}
-                      {formData.download2160p && (
-                        <div>
-                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} 2160p {formData.qualityDetail2160p} [{formData.size2160p}]</p>
-                          <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
-                        </div>
-                      )}
-                      {formData.customDownloads.map((custom, idx) => custom.link && (
+                      {formData.allDownloads.filter(dl => dl.link).map((dl, idx) => (
                         <div key={idx}>
-                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} {custom.name} [{custom.size}]</p>
+                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} {dl.name} {dl.qualityDetail} [{dl.size}]</p>
                           <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
                         </div>
                       ))}
@@ -1027,6 +877,7 @@ const Admin = () => {
                   </div>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>

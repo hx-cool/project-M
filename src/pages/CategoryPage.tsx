@@ -20,6 +20,14 @@ interface Movie {
   synopsis?: string;
   cast?: string[];
   posterUrl: string;
+  platform?: string;
+  isSeries?: boolean;
+  episodeInfo?: string;
+  releaseDate?: string;
+  language?: string;
+  audioType?: string;
+  show4K?: boolean;
+  slug?: string;
 }
 
 interface CategoryPageProps {
@@ -28,12 +36,78 @@ interface CategoryPageProps {
   description?: string;
 }
 
-const CategoryPage = ({ categoryName, movies, description }: CategoryPageProps) => {
+const CategoryPage = ({ categoryName, movies: propMovies, description }: CategoryPageProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
+  const [movies, setMovies] = useState<Movie[]>(propMovies || []);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { setSearchQuery } = useSearch();
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
+        const catLower = categoryName.toLowerCase();
+        let url = `http://${window.location.hostname}:3001/api/movies`;
+        
+        // For genre-based categories, use search endpoint
+        if (catLower.includes('action')) url = `http://${window.location.hostname}:3001/api/movies/search?genre=Action`;
+        else if (catLower.includes('horror')) url = `http://${window.location.hostname}:3001/api/movies/search?genre=Horror`;
+        else if (catLower.includes('comedy')) url = `http://${window.location.hostname}:3001/api/movies/search?genre=Comedy`;
+        else if (catLower.includes('sci-fi')) url = `http://${window.location.hostname}:3001/api/movies/search?genre=Sci-Fi`;
+        else if (catLower.includes('drama')) url = `http://${window.location.hostname}:3001/api/movies/search?genre=Drama`;
+
+        console.log('Fetching from:', url);
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log('Fetched data:', data.length, 'movies');
+        
+        // Apply additional filters for non-genre categories
+        let filtered = data;
+        if (catLower.includes('hindi')) filtered = data.filter((m: any) => m.movieOrigin === 'Bollywood');
+        else if (catLower.includes('english')) filtered = data.filter((m: any) => m.movieOrigin === 'Hollywood');
+        else if (catLower.includes('anime')) filtered = data.filter((m: any) => m.movieOrigin === 'Anime');
+        else if (catLower.includes('k-drama') || catLower.includes('korean')) filtered = data.filter((m: any) => m.movieOrigin === 'Korean');
+        else if (catLower.includes('netflix')) filtered = data.filter((m: any) => m.platform === 'Netflix');
+        else if (catLower.includes('amazon') || catLower.includes('prime')) filtered = data.filter((m: any) => m.platform === 'Amazon Prime');
+        else if (catLower.includes('web series') || catLower.includes('series')) filtered = data.filter((m: any) => m.isSeries === true);
+        
+        console.log('Filtered to:', filtered.length, 'movies');
+        
+        const formattedMovies = filtered.map((movie: any) => ({
+          title: movie.title,
+          year: movie.year || '2025',
+          genre: movie.genres?.map((g: any) => g.genre.name).join(', ') || 'N/A',
+          rating: movie.rating || 0,
+          quality: movie.quality || 'HD',
+          posterUrl: movie.posterUrl || '',
+          duration: movie.duration,
+          synopsis: movie.synopsis,
+          cast: movie.cast?.map((c: any) => c.cast.name) || [],
+          platform: movie.platform,
+          isSeries: movie.isSeries,
+          episodeInfo: movie.episodeInfo,
+          releaseDate: movie.releaseDate,
+          language: movie.language,
+          audioType: movie.audioType,
+          show4K: movie.show4K,
+          slug: movie.slug
+        }));
+        
+        console.log('Setting movies:', formattedMovies.length);
+        setMovies(formattedMovies);
+      } catch (error) {
+        console.error('Failed to fetch movies:', error);
+        setMovies(propMovies || []);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, [categoryName, propMovies]);
 
   const handleGlobalSearch = () => {
     (document.activeElement as HTMLElement)?.blur();
@@ -75,8 +149,9 @@ const CategoryPage = ({ categoryName, movies, description }: CategoryPageProps) 
     <div className="min-h-screen bg-background">
       <Header />
       
+      
       {/* Category Section with Search */}
-      <div className="bg-surface/30 backdrop-blur-sm py-2">
+      <div className="bg-[#191919] py-2">
         <div className="container mx-auto px-4">
           {/* White Search Bar */}
           <div className="max-w-4xl mx-auto mb-4">
@@ -190,7 +265,7 @@ const CategoryPage = ({ categoryName, movies, description }: CategoryPageProps) 
 
       {/* Category Header */}
       <div className="py-4">
-        <div className="container mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-8">
           <h1 className="text-2xl md:text-3xl font-bold text-white">
             {categoryName}
           </h1>
@@ -199,9 +274,13 @@ const CategoryPage = ({ categoryName, movies, description }: CategoryPageProps) 
 
       {/* Movies Grid */}
       <main className="py-4">
-        <div className="container mx-auto px-4">
-          {currentMovies.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8">
+          {loading ? (
+            <div className="text-center py-16">
+              <p className="text-xl text-muted-foreground">Loading movies...</p>
+            </div>
+          ) : currentMovies.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-4 md:gap-6">
               {currentMovies.map((movie, index) => (
                 <div
                   key={index}
@@ -218,6 +297,14 @@ const CategoryPage = ({ categoryName, movies, description }: CategoryPageProps) 
                     synopsis={movie.synopsis}
                     cast={movie.cast}
                     posterUrl={movie.posterUrl}
+                    platform={movie.platform}
+                    isSeries={movie.isSeries}
+                    episodeInfo={movie.episodeInfo}
+                    releaseDate={movie.releaseDate}
+                    language={movie.language}
+                    audioType={movie.audioType}
+                    show4K={movie.show4K}
+                    slug={movie.slug}
                   />
                 </div>
               ))}

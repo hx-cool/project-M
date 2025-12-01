@@ -54,7 +54,7 @@ const MovieSection = ({ title, movies }: { title: string; movies: any[] }) => {
 
       {/* Movie Grid - Full Width */}
       <div className="w-full px-4">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
           {extendedMovies.map((movie, index) => (
             <div
               key={index}
@@ -185,7 +185,7 @@ const Index = () => {
       <Header />
 
       {/* Category Section with Search */}
-      <div className="bg-surface/30 backdrop-blur-sm py-3">
+      <div className="bg-[#191919] py-3">
         <div className="max-w-7xl mx-auto px-4">
           {/* White Search Bar */}
           <div className="max-w-4xl mx-auto mb-4">
@@ -337,8 +337,8 @@ const Index = () => {
             </div>
 
             {/* Movie Grid */}
-            <div className="max-w-7xl mx-auto px-4">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+            <div className="max-w-7xl mx-auto px-6 sm:px-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-4 md:gap-6">
                 {getCurrentPageMovies().map((movie, index) => (
                   <div
                     key={index}
@@ -373,9 +373,9 @@ const Index = () => {
 
         {/* Normal Homepage Grid */}
         {!isSearching && (
-          <div className="py-8">
-            <div className="max-w-7xl mx-auto px-4">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+          <div className="py-4">
+            <div className="max-w-7xl mx-auto px-6 sm:px-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-4 md:gap-6">
                 {getCurrentPageMovies().map((movie, index) => (
                   <div
                     key={index}
@@ -410,7 +410,7 @@ const Index = () => {
 
           {/* Pagination */}
           {!isSearching && (
-            <div className="max-w-7xl mx-auto px-4 mt-8">
+            <div className="max-w-7xl mx-auto px-8 mt-8">
               <div className="flex justify-center items-center gap-2">
                 {currentPage > 1 && (
                   <button

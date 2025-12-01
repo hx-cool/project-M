@@ -88,6 +88,7 @@ model Download {
   qualityDetail String?
   size          String?
   link          String? @db.Text
+  order         Int     @default(999)
   movie         Movie   @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
   @@map("downloads")

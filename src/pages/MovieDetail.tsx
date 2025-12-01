@@ -49,7 +49,7 @@ const MovieDetail = () => {
             isSeries: foundMovie.isSeries,
           });
           setDbScreenshots(foundMovie.screenshots?.map((s: any) => s.url) || []);
-          setDbDownloads(foundMovie.downloads || []);
+          setDbDownloads((foundMovie.downloads || []).sort((a: any, b: any) => (a.order || 999) - (b.order || 999)));
           setLoading(false);
         })
         .catch(() => {
@@ -296,17 +296,23 @@ const MovieDetail = () => {
             {/* Screenshots */}
             <div className="mt-6">
               <h3 className="text-xl font-bold text-pink mb-4 text-center">Screenshots: (Must See Before Downloading)...</h3>
-              <div className="space-y-4">
-                {(dbScreenshots.length > 0 ? dbScreenshots : (movie.screenshots || [movie.posterUrl, movie.posterUrl, movie.posterUrl, movie.posterUrl, movie.posterUrl])).slice(0, 5).map((screenshot, index) => (
-                  <div key={index} className="w-full aspect-video">
-                    <img
-                      src={screenshot}
-                      alt={`Movie Screenshot ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
+              {dbScreenshots.length > 0 || (movie.screenshots && movie.screenshots.length > 0) ? (
+                <div className="space-y-4">
+                  {(dbScreenshots.length > 0 ? dbScreenshots : movie.screenshots).slice(0, 5).map((screenshot, index) => (
+                    <div key={index} className="w-full aspect-video">
+                      <img
+                        src={screenshot}
+                        alt={`Movie Screenshot ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white/[0.03] rounded-xl p-8 text-center">
+                  <p className="text-gray-400 text-lg">Screenshots not available</p>
+                </div>
+              )}
             </div>
 
             {/* Divider */}
@@ -337,7 +343,7 @@ const MovieDetail = () => {
                 {dbDownloads.length > 0 ? (
                   /* Database Downloads */
                   <div className="space-y-6">
-                    {dbDownloads.map((download: any, idx: number) => (
+                    {dbDownloads.sort((a: any, b: any) => (a.order || 999) - (b.order || 999)).map((download: any, idx: number) => (
                       <div key={idx} className="pb-6 last:pb-0">
                         <p className="text-white font-medium mb-3 text-center">
                           {movie.title} ({movie.year}) {download.resolution} [{download.size || 'N/A'}]
