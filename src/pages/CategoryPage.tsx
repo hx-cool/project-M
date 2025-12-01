@@ -151,14 +151,14 @@ const CategoryPage = ({ categoryName, movies: propMovies, description }: Categor
       
       
       {/* Category Section with Search */}
-      <div className="bg-[#191919] py-2">
+      <div className="bg-[#191919] py-6">
         <div className="container mx-auto px-4">
           {/* White Search Bar */}
           <div className="max-w-4xl mx-auto mb-4">
             <div className="flex items-center gap-4">
               <div className="relative flex-1">
                 <div className="absolute inset-0 rounded-md bg-gradient-to-r from-pink to-magenta p-px">
-                  <div className="h-full w-full rounded-md bg-white"></div>
+                  <div className="h-full w-full rounded-md bg-gray-100"></div>
                 </div>
                 <Search className="absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
                 <Input
@@ -226,29 +226,34 @@ const CategoryPage = ({ categoryName, movies: propMovies, description }: Categor
           </div>
           
           {/* Desktop Category Buttons */}
-          <div className="hidden md:flex flex-wrap gap-3 justify-center max-w-6xl mx-auto">
-            {[
-              { name: 'Action', link: '/category/action' },
-              { name: 'Horror', link: '/category/horror' },
-              { name: 'Comedy', link: '/category/comedy' },
-              { name: 'Sci-Fi', link: '/category/sci-fi' },
-              { name: 'Drama', link: '/category/drama' },
-              { name: 'Hindi', link: '/category/hindi' },
-              { name: 'Web Series', link: '/category/web-series' },
-              { name: 'Anime', link: '/category/anime' },
-              { name: 'Trending', link: '/category/trending' },
-              { name: 'K-Drama', link: '/category/k-drama' },
-              { name: 'Netflix', link: '/category/netflix' },
-              { name: 'English', link: '/category/english' }
-            ].map((category) => (
-              <a
-                key={category.name}
-                href={category.link}
-                className="px-4 py-2 bg-surface/80 backdrop-blur-sm border border-border/50 text-foreground/90 text-sm font-medium rounded-full hover:bg-pink/10 hover:border-pink hover:text-pink hover:glow-pink transition-all duration-300 hover:scale-105 inline-block"
-              >
-                {category.name}
-              </a>
-            ))}
+          <div className="hidden md:block max-w-6xl mx-auto mt-2">
+            {/* Row 1 */}
+            <div className="flex flex-wrap gap-4 justify-center mb-4">
+              <a href="/category/netflix" className="px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Netflix</a>
+              <a href="/category/amazon-prime" className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Amazon Prime</a>
+              <a href="/category/disney" className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Disney</a>
+              <a href="/category/jiohotstar" className="px-6 py-2.5 bg-gradient-to-r from-blue-700 to-indigo-700 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Jiohotstar</a>
+            </div>
+            {/* Row 2 */}
+            <div className="flex flex-wrap gap-4 justify-center">
+              {[
+                { name: 'Trending', link: '/category/trending' },
+                { name: 'Hollywood', link: '/category/hollywood' },
+                { name: 'Bollywood', link: '/category/bollywood' },
+                { name: 'South Indian', link: '/category/south-indian' },
+                { name: 'Web Series', link: '/category/web-series' },
+                { name: 'Anime', link: '/category/anime' },
+                { name: 'K-Drama', link: '/category/k-drama' }
+              ].map((category) => (
+                <a
+                  key={category.name}
+                  href={category.link}
+                  className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-red-600 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block"
+                >
+                  {category.name}
+                </a>
+              ))}
+            </div>
           </div>
           
 
