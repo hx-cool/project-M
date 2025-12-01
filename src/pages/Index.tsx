@@ -191,8 +191,8 @@ const Index = () => {
           <div className="max-w-4xl mx-auto mb-4">
             <div className="flex items-center gap-4">
               <div className="relative flex-1">
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-pink to-magenta p-px">
-                  <div className="h-full w-full rounded-2xl bg-white"></div>
+                <div className="absolute inset-0 rounded-md bg-gradient-to-r from-pink to-magenta p-px">
+                  <div className="h-full w-full rounded-md bg-white"></div>
                 </div>
                 <Search className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
                 <Input
@@ -201,13 +201,13 @@ const Index = () => {
                   value={localSearchQuery}
                   onChange={(e) => setLocalSearchQuery(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') { (e.target as HTMLElement).blur(); handleMobileSearch(); } }}
-                  className="relative z-10 h-10 md:h-16 w-full rounded-2xl bg-transparent border-0 pl-6 pr-6 text-sm md:text-lg text-black placeholder:text-gray-400 focus:outline-none transition-all"
+                  className="relative z-10 h-10 md:h-12 w-full rounded-md bg-transparent border-0 pl-6 pr-6 text-sm md:text-lg text-black placeholder:text-gray-400 focus:outline-none transition-all"
                 />
               </div>
               <Button
                 onClick={handleMobileSearch}
                 size="lg"
-                className="hidden md:flex bg-gradient-to-r from-pink to-purple-600 text-white font-bold px-8 py-4 h-8 md:h-16 rounded-lg shadow-md"
+                className="hidden md:flex bg-gradient-to-r from-pink to-purple-600 text-white font-bold px-8 py-4 h-8 md:h-12 rounded-md shadow-md"
               >
                 Search
               </Button>
