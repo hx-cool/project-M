@@ -117,10 +117,10 @@ export const Header = () => {
     <>
       <header
         className={cn(
-          "border-b transition-all duration-300 h-16 md:h-20 md:sticky md:top-0 z-[9999] relative bg-gradient-to-r from-black via-[#0d0000] to-[#1a0000]",
+          "border-b border-white/20 transition-all duration-300 h-16 md:h-20 md:sticky md:top-0 z-[9999] relative bg-gradient-to-r from-black via-[#0d0000] to-[#1a0000]",
           isScrolled
-            ? "border-foreground/10 backdrop-blur-lg shadow-cinema"
-            : "border-foreground/5 backdrop-blur-md"
+            ? "backdrop-blur-lg shadow-cinema"
+            : "backdrop-blur-md"
         )}
       >
         <div className="max-w-7xl mx-auto flex h-full items-center justify-between px-4 gap-6">
@@ -133,7 +133,7 @@ export const Header = () => {
           </button>
 
           {/* Premium Logo */}
-          <div className="flex-shrink-0 flex items-center gap-3 md:justify-start justify-center md:flex-1-0 flex-1">
+          <a href="/" className="flex-shrink-0 flex items-center gap-3 md:flex-shrink-0 absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0">
             <div className="relative">
               <Film className="h-8 w-8 text-luxury animate-spin" style={{ animationDuration: '8s' }} />
               <div className="absolute inset-0 bg-luxury/30 rounded-full blur-md animate-pulse" />
@@ -141,10 +141,10 @@ export const Header = () => {
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-pink via-magenta to-luxury bg-clip-text text-transparent">
               Movies<span className="text-pink">Wala</span>
             </h1>
-          </div>
+          </a>
 
           {/* Centered Navigation - Desktop */}
-          <nav className="hidden lg:flex items-center gap-6 flex-1 justify-center">
+          <nav className="hidden lg:flex items-center gap-6 flex-1 justify-center mx-auto">
             {navLinks.map((link) => (
               <div 
                 key={link.name} 
@@ -158,7 +158,7 @@ export const Header = () => {
                       e.preventDefault();
                       setOpenDropdown(openDropdown === link.name ? null : link.name);
                     }}
-                    className="text-base font-medium text-foreground/80 transition-colors hover:text-pink hover:glow-pink whitespace-nowrap flex items-center gap-1 py-2"
+                    className="text-base font-medium text-foreground/80 whitespace-nowrap flex items-center gap-1 py-2"
                   >
                     {link.name}
                     <ChevronDown className={cn("h-4 w-4 transition-transform", openDropdown === link.name && "rotate-180")} />
@@ -166,7 +166,7 @@ export const Header = () => {
                 ) : (
                   <a
                     href={link.href}
-                    className="text-base font-medium text-foreground/80 transition-colors hover:text-pink hover:glow-pink whitespace-nowrap py-2 block"
+                    className="text-base font-medium text-foreground/80 whitespace-nowrap py-2 block"
                   >
                     {link.name}
                   </a>
@@ -210,22 +210,6 @@ export const Header = () => {
                 className="h-10 w-56 rounded-md bg-surface/50 backdrop-blur-sm pl-10 pr-4 border-border focus:border-pink focus:ring-2 focus:ring-pink/50 focus:glow-pink transition-all"
               />
             </div>
-
-
-            {/* Telegram */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden md:flex h-10 px-4 border-pink/50 text-pink hover:bg-pink/10 hover:border-pink hover:glow-pink transition-all gap-2"
-              asChild
-            >
-              <a href="https://t.me/movieswala" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                <Send className="h-4 w-4" />
-                Telegram
-              </a>
-            </Button>
-
-
 
             {/* Mobile Search Icon */}
             <button
