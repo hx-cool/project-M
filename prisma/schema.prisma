@@ -27,6 +27,9 @@ model Movie {
   platform        String?
   isSeries        Boolean  @default(false)
   episodeInfo     String?
+  seasonNumber    Int?
+  seriesId        String?
+  episodesThisSeason Int?
   releaseDate     String?
   movieOrigin     String?
   codec           String?

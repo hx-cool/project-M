@@ -375,37 +375,31 @@ const MovieDetail = () => {
                             <p className="text-white font-medium mb-3 text-center">
                               {movie.title} Hindi DD5.1 WEB-DL 480p H.264 [{movie.downloads["480p"].batchSize}]
                             </p>
-                            <div className="flex gap-3 justify-center">
-                              {movie.downloads["480p"].episode ? (
-                                <a
-                                  href={movie.downloads["480p"].episode}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
-                                >
-                                  Single Episode
-                                </a>
-                              ) : (
-                                <button className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
-                                  Single Episode
-                                </button>
-                              )}
+                            {(movie.downloads["480p"].episode || movie.downloads["480p"].batch) && (
+                              <div className="flex gap-3 justify-center">
+                                {movie.downloads["480p"].episode ? (
+                                  <a
+                                    href={movie.downloads["480p"].episode}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                  >
+                                    Single Episode
+                                  </a>
+                                ) : null}
 
-                              {movie.downloads["480p"].batch ? (
-                                <a
-                                  href={movie.downloads["480p"].batch}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
-                                >
-                                  Batch/Zip
-                                </a>
-                              ) : (
-                                <button className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
-                                  Batch/Zip
-                                </button>
-                              )}
-                            </div>
+                                {movie.downloads["480p"].batch ? (
+                                  <a
+                                    href={movie.downloads["480p"].batch}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                  >
+                                    Batch/Zip
+                                  </a>
+                                ) : null}
+                              </div>
+                            )}
                           </div>
                         )}
 
@@ -414,37 +408,31 @@ const MovieDetail = () => {
                             <p className="text-white font-medium mb-3 text-center">
                               {movie.title} Hindi DD5.1 WEB-DL 720p H.264 [{movie.downloads["720p"].batchSize}]
                             </p>
-                            <div className="flex gap-3 justify-center">
-                              {movie.downloads["720p"].episode ? (
-                                <a
-                                  href={movie.downloads["720p"].episode}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
-                                >
-                                  Single Episode
-                                </a>
-                              ) : (
-                                <button className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
-                                  Single Episode
-                                </button>
-                              )}
+                            {(movie.downloads["720p"].episode || movie.downloads["720p"].batch) && (
+                              <div className="flex gap-3 justify-center">
+                                {movie.downloads["720p"].episode ? (
+                                  <a
+                                    href={movie.downloads["720p"].episode}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                  >
+                                    Single Episode
+                                  </a>
+                                ) : null}
 
-                              {movie.downloads["720p"].batch ? (
-                                <a
-                                  href={movie.downloads["720p"].batch}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
-                                >
-                                  Batch/Zip
-                                </a>
-                              ) : (
-                                <button className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
-                                  Batch/Zip
-                                </button>
-                              )}
-                            </div>
+                                {movie.downloads["720p"].batch ? (
+                                  <a
+                                    href={movie.downloads["720p"].batch}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                  >
+                                    Batch/Zip
+                                  </a>
+                                ) : null}
+                              </div>
+                            )}
                           </div>
                         )}
 
@@ -453,37 +441,31 @@ const MovieDetail = () => {
                             <p className="text-white font-medium mb-3 text-center">
                               {movie.title} Hindi DD5.1 WEB-DL 1080p H.264 [{movie.downloads["1080p"].batchSize}]
                             </p>
-                            <div className="flex gap-3 justify-center">
-                              {movie.downloads["1080p"].episode ? (
-                                <a
-                                  href={movie.downloads["1080p"].episode}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
-                                >
-                                  Single Episode
-                                </a>
-                              ) : (
-                                <button className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
-                                  Single Episode
-                                </button>
-                              )}
+                            {(movie.downloads["1080p"].episode || movie.downloads["1080p"].batch) && (
+                              <div className="flex gap-3 justify-center">
+                                {movie.downloads["1080p"].episode ? (
+                                  <a
+                                    href={movie.downloads["1080p"].episode}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                  >
+                                    Single Episode
+                                  </a>
+                                ) : null}
 
-                              {movie.downloads["1080p"].batch ? (
-                                <a
-                                  href={movie.downloads["1080p"].batch}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
-                                >
-                                  Batch/Zip
-                                </a>
-                              ) : (
-                                <button className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
-                                  Batch/Zip
-                                </button>
-                              )}
-                            </div>
+                                {movie.downloads["1080p"].batch ? (
+                                  <a
+                                    href={movie.downloads["1080p"].batch}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                                  >
+                                    Batch/Zip
+                                  </a>
+                                ) : null}
+                              </div>
+                            )}
                           </div>
                         )}
                       </>
@@ -491,37 +473,31 @@ const MovieDetail = () => {
                       /* Fallback for legacy single-link format */
                       <div>
                         <p className="text-white font-medium mb-3 text-center">{movie.title} ({movie.year})</p>
-                        <div className="flex gap-3 justify-center">
-                          {movie.episodeDownloadLink ? (
-                            <a
-                              href={movie.episodeDownloadLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
-                            >
-                              Single Episode
-                            </a>
-                          ) : (
-                            <button className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
-                              Single Episode
-                            </button>
-                          )}
+                        {(movie.episodeDownloadLink || movie.batchDownloadLink) && (
+                          <div className="flex gap-3 justify-center">
+                            {movie.episodeDownloadLink ? (
+                              <a
+                                href={movie.episodeDownloadLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 max-w-xs bg-gradient-to-r from-pink to-magenta text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                              >
+                                Single Episode
+                              </a>
+                            ) : null}
 
-                          {movie.batchDownloadLink ? (
-                            <a
-                              href={movie.batchDownloadLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
-                            >
-                              Batch/Zip {movie.batchSize ? `[${movie.batchSize}]` : ''}
-                            </a>
-                          ) : (
-                            <button className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80">
-                              Batch/Zip {movie.batchSize ? `[${movie.batchSize}]` : ''}
-                            </button>
-                          )}
-                        </div>
+                            {movie.batchDownloadLink ? (
+                              <a
+                                href={movie.batchDownloadLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 md:py-4 text-sm md:text-base rounded-lg hover:opacity-90 transition-all opacity-80 text-center"
+                              >
+                                Batch/Zip {movie.batchSize ? `[${movie.batchSize}]` : ''}
+                              </a>
+                            ) : null}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

@@ -21,6 +21,13 @@ const Admin = () => {
     platform: "",
     isSeries: false,
     episodeInfo: "",
+    seriesBaseName: "",
+    seasonNumber: "1",
+    seriesId: "",
+    episodesThisSeason: "",
+    totalSeasons: "",
+    seriesStatus: "Ongoing",
+    seriesType: "Web Series",
     quality: "WEB-DL",
     customQuality: "",
     audioType: "Dual Audio",
@@ -47,16 +54,16 @@ const Admin = () => {
     // Download Links - Unified
     codec: "none",
     allDownloads: [
-      {id: '480p', name: '480p', link: '', size: '422MB', qualityDetail: 'WEB-DL', order: 0, isCustom: false},
-      {id: '720p10bit', name: '720p 10Bit', link: '', size: '670MB', qualityDetail: 'WEB-DL x264', order: 1, isCustom: false},
-      {id: '720p', name: '720p', link: '', size: '1GB', qualityDetail: 'WEB-DL x264', order: 2, isCustom: false},
-      {id: '1080p10bit', name: '1080p 10Bit', link: '', size: '2GB', qualityDetail: 'WEB-DL x265', order: 3, isCustom: false},
-      {id: '1080p', name: '1080p', link: '', size: '2.6GB', qualityDetail: 'WEB-DL x264', order: 4, isCustom: false},
-      {id: '1080p60fps', name: '1080p 60FPS', link: '', size: '3.5GB', qualityDetail: 'WEB-DL x264', order: 5, isCustom: false},
-      {id: '1440p', name: '1440p', link: '', size: '4.5GB', qualityDetail: 'WEB-DL x265', order: 6, isCustom: false},
-      {id: '2160p', name: '2160p', link: '', size: '8GB', qualityDetail: '4K SDR x265', order: 7, isCustom: false},
-      {id: '2160p10bit', name: '2160p 10Bit', link: '', size: '10GB', qualityDetail: '4K HDR x265', order: 8, isCustom: false},
-    ] as Array<{id: string, name: string, link: string, size: string, qualityDetail: string, order: number, isCustom: boolean}>,
+      {id: '480p', name: '480p', link: '', size: '422MB', qualityDetail: 'WEB-DL', batchLink: '', batchSize: '', order: 0, isCustom: false},
+      {id: '720p10bit', name: '720p 10Bit', link: '', size: '670MB', qualityDetail: 'WEB-DL x264', batchLink: '', batchSize: '', order: 1, isCustom: false},
+      {id: '720p', name: '720p', link: '', size: '1GB', qualityDetail: 'WEB-DL x264', batchLink: '', batchSize: '', order: 2, isCustom: false},
+      {id: '1080p10bit', name: '1080p 10Bit', link: '', size: '2GB', qualityDetail: 'WEB-DL x265', batchLink: '', batchSize: '', order: 3, isCustom: false},
+      {id: '1080p', name: '1080p', link: '', size: '2.6GB', qualityDetail: 'WEB-DL x264', batchLink: '', batchSize: '', order: 4, isCustom: false},
+      {id: '1080p60fps', name: '1080p 60FPS', link: '', size: '3.5GB', qualityDetail: 'WEB-DL x264', batchLink: '', batchSize: '', order: 5, isCustom: false},
+      {id: '1440p', name: '1440p', link: '', size: '4.5GB', qualityDetail: 'WEB-DL x265', batchLink: '', batchSize: '', order: 6, isCustom: false},
+      {id: '2160p', name: '2160p', link: '', size: '8GB', qualityDetail: '4K SDR x265', batchLink: '', batchSize: '', order: 7, isCustom: false},
+      {id: '2160p10bit', name: '2160p 10Bit', link: '', size: '10GB', qualityDetail: '4K HDR x265', batchLink: '', batchSize: '', order: 8, isCustom: false},
+    ] as Array<{id: string, name: string, link: string, size: string, qualityDetail: string, batchLink?: string, batchSize?: string, order: number, isCustom: boolean}>,
   });
 
   useEffect(() => {
@@ -89,16 +96,16 @@ const Admin = () => {
       
       const predefinedIds = ['480p', '720p 10Bit', '720p', '1080p 10Bit', '1080p', '1080p 60FPS', '1440p', '2160p', '2160p 10Bit'];
       const allDownloads = [
-        {id: '480p', name: '480p', link: movie.downloads?.find((d: any) => d.resolution === '480p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '480p')?.size || '422MB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '480p')?.qualityDetail || 'WEB-DL', order: movie.downloads?.find((d: any) => d.resolution === '480p')?.order ?? 0, isCustom: false},
-        {id: '720p10bit', name: '720p 10Bit', link: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.size || '670MB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.qualityDetail || 'WEB-DL x264', order: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.order ?? 1, isCustom: false},
-        {id: '720p', name: '720p', link: movie.downloads?.find((d: any) => d.resolution === '720p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '720p')?.size || '1GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '720p')?.qualityDetail || 'WEB-DL x264', order: movie.downloads?.find((d: any) => d.resolution === '720p')?.order ?? 2, isCustom: false},
-        {id: '1080p10bit', name: '1080p 10Bit', link: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.size || '2GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.qualityDetail || 'WEB-DL x265', order: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.order ?? 3, isCustom: false},
-        {id: '1080p', name: '1080p', link: movie.downloads?.find((d: any) => d.resolution === '1080p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1080p')?.size || '2.6GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1080p')?.qualityDetail || 'WEB-DL x264', order: movie.downloads?.find((d: any) => d.resolution === '1080p')?.order ?? 4, isCustom: false},
-        {id: '1080p60fps', name: '1080p 60FPS', link: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.size || '3.5GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.qualityDetail || 'WEB-DL x264', order: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.order ?? 5, isCustom: false},
-        {id: '1440p', name: '1440p', link: movie.downloads?.find((d: any) => d.resolution === '1440p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1440p')?.size || '4.5GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1440p')?.qualityDetail || 'WEB-DL x265', order: movie.downloads?.find((d: any) => d.resolution === '1440p')?.order ?? 6, isCustom: false},
-        {id: '2160p', name: '2160p', link: movie.downloads?.find((d: any) => d.resolution === '2160p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '2160p')?.size || '8GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '2160p')?.qualityDetail || '4K SDR x265', order: movie.downloads?.find((d: any) => d.resolution === '2160p')?.order ?? 7, isCustom: false},
-        {id: '2160p10bit', name: '2160p 10Bit', link: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.size || '10GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.qualityDetail || '4K HDR x265', order: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.order ?? 8, isCustom: false},
-        ...movie.downloads?.filter((d: any) => !predefinedIds.includes(d.resolution)).map((d: any, idx: number) => ({id: `custom-${idx}`, name: d.resolution, link: d.link, qualityDetail: d.qualityDetail || '', size: d.size, order: d.order ?? 999, isCustom: true})) || []
+        {id: '480p', name: '480p', link: movie.downloads?.find((d: any) => d.resolution === '480p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '480p')?.size || '422MB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '480p')?.qualityDetail || 'WEB-DL', batchLink: movie.downloads?.find((d: any) => d.resolution === '480p')?.batchLink || '', batchSize: movie.downloads?.find((d: any) => d.resolution === '480p')?.batchSize || '', order: movie.downloads?.find((d: any) => d.resolution === '480p')?.order ?? 0, isCustom: false},
+        {id: '720p10bit', name: '720p 10Bit', link: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.size || '670MB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.qualityDetail || 'WEB-DL x264', batchLink: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.batchLink || '', batchSize: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.batchSize || '', order: movie.downloads?.find((d: any) => d.resolution === '720p 10Bit')?.order ?? 1, isCustom: false},
+        {id: '720p', name: '720p', link: movie.downloads?.find((d: any) => d.resolution === '720p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '720p')?.size || '1GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '720p')?.qualityDetail || 'WEB-DL x264', batchLink: movie.downloads?.find((d: any) => d.resolution === '720p')?.batchLink || '', batchSize: movie.downloads?.find((d: any) => d.resolution === '720p')?.batchSize || '', order: movie.downloads?.find((d: any) => d.resolution === '720p')?.order ?? 2, isCustom: false},
+        {id: '1080p10bit', name: '1080p 10Bit', link: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.size || '2GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.qualityDetail || 'WEB-DL x265', batchLink: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.batchLink || '', batchSize: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.batchSize || '', order: movie.downloads?.find((d: any) => d.resolution === '1080p 10Bit')?.order ?? 3, isCustom: false},
+        {id: '1080p', name: '1080p', link: movie.downloads?.find((d: any) => d.resolution === '1080p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1080p')?.size || '2.6GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1080p')?.qualityDetail || 'WEB-DL x264', batchLink: movie.downloads?.find((d: any) => d.resolution === '1080p')?.batchLink || '', batchSize: movie.downloads?.find((d: any) => d.resolution === '1080p')?.batchSize || '', order: movie.downloads?.find((d: any) => d.resolution === '1080p')?.order ?? 4, isCustom: false},
+        {id: '1080p60fps', name: '1080p 60FPS', link: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.size || '3.5GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.qualityDetail || 'WEB-DL x264', batchLink: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.batchLink || '', batchSize: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.batchSize || '', order: movie.downloads?.find((d: any) => d.resolution === '1080p 60FPS')?.order ?? 5, isCustom: false},
+        {id: '1440p', name: '1440p', link: movie.downloads?.find((d: any) => d.resolution === '1440p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '1440p')?.size || '4.5GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '1440p')?.qualityDetail || 'WEB-DL x265', batchLink: movie.downloads?.find((d: any) => d.resolution === '1440p')?.batchLink || '', batchSize: movie.downloads?.find((d: any) => d.resolution === '1440p')?.batchSize || '', order: movie.downloads?.find((d: any) => d.resolution === '1440p')?.order ?? 6, isCustom: false},
+        {id: '2160p', name: '2160p', link: movie.downloads?.find((d: any) => d.resolution === '2160p')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '2160p')?.size || '8GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '2160p')?.qualityDetail || '4K SDR x265', batchLink: movie.downloads?.find((d: any) => d.resolution === '2160p')?.batchLink || '', batchSize: movie.downloads?.find((d: any) => d.resolution === '2160p')?.batchSize || '', order: movie.downloads?.find((d: any) => d.resolution === '2160p')?.order ?? 7, isCustom: false},
+        {id: '2160p10bit', name: '2160p 10Bit', link: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.link || '', size: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.size || '10GB', qualityDetail: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.qualityDetail || 'WEB-DL x265', batchLink: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.batchLink || '', batchSize: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.batchSize || '', order: movie.downloads?.find((d: any) => d.resolution === '2160p 10Bit')?.order ?? 8, isCustom: false},
+        ...movie.downloads?.filter((d: any) => !predefinedIds.includes(d.resolution)).map((d: any, idx: number) => ({id: `custom-${idx}`, name: d.resolution, link: d.link, qualityDetail: d.qualityDetail || '', size: d.size, batchLink: d.batchLink || '', order: d.order ?? 999, isCustom: true})) || []
       ].sort((a, b) => a.order - b.order);
       
       setFormData({
@@ -108,6 +115,13 @@ const Admin = () => {
         platform: movie.platform || "",
         isSeries: movie.isSeries || false,
         episodeInfo: movie.episodeInfo || "",
+        seriesBaseName: movie.title?.replace(/ Season \d+/g, '') || "",
+        seasonNumber: movie.seasonNumber?.toString() || "1",
+        seriesId: movie.seriesId || "",
+        episodesThisSeason: movie.episodesThisSeason?.toString() || "",
+        totalSeasons: movie.totalSeasons?.toString() || "",
+        seriesStatus: movie.seriesStatus || "Ongoing",
+        seriesType: movie.seriesType || "Web Series",
         quality: movie.quality || "WEB-DL",
         customQuality: movie.customQuality || "",
         audioType: movie.audioType || "Dual Audio",
@@ -251,9 +265,6 @@ const Admin = () => {
             cast: "",
             screenshots: "",
             codec: "none",
-            download360p: "",
-            size360p: "250MB",
-            qualityDetail360p: "WEB-DL",
             download480p: "",
             size480pCustom: "422MB",
             qualityDetail480p: "WEB-DL",
@@ -297,7 +308,7 @@ const Admin = () => {
             Back to CRUD Panel
           </Button>
           <h1 className="text-4xl font-bold text-white">
-            Admin Panel - {isEditMode ? 'Edit Movie' : 'Add Movie'}
+            Admin Panel - {isEditMode ? (formData.isSeries ? 'Edit Series' : 'Edit Movie') : (formData.isSeries ? 'Add Series' : 'Add Movie')}
           </h1>
         </div>
         
@@ -305,7 +316,7 @@ const Admin = () => {
           {/* Form */}
           <Card className="lg:col-span-1 bg-gray-900 border-gray-800 admin-form-card">
             <CardHeader>
-              <CardTitle className="text-white">Movie Details</CardTitle>
+              <CardTitle className="text-white">{formData.isSeries ? 'Series Details' : 'Movie Details'}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -391,14 +402,118 @@ const Admin = () => {
                     </div>
 
                     {formData.isSeries && (
-                      <div>
-                        <Label className="text-white">Episode Info (for series)</Label>
-                        <Input
-                          value={formData.episodeInfo}
-                          onChange={(e) => setFormData({ ...formData, episodeInfo: e.target.value })}
-                          placeholder="[S01E05 – Added] or (Season 1) Complete"
-                          className="bg-gray-800 text-white border-gray-700"
-                        />
+                      <div className="space-y-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                        <h4 className="text-pink font-medium">Series Information</h4>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-white">Series Type</Label>
+                            <Select value={formData.seriesType} onValueChange={(val) => setFormData({ ...formData, seriesType: val })}>
+                              <SelectTrigger className="bg-gray-800 text-white border-gray-700">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Web Series">Web Series</SelectItem>
+                                <SelectItem value="TV Show">TV Show</SelectItem>
+                                <SelectItem value="Mini Series">Mini Series</SelectItem>
+                                <SelectItem value="Documentary Series">Documentary Series</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-white">Series Status</Label>
+                            <Select value={formData.seriesStatus} onValueChange={(val) => setFormData({ ...formData, seriesStatus: val })}>
+                              <SelectTrigger className="bg-gray-800 text-white border-gray-700">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Ongoing">Ongoing</SelectItem>
+                                <SelectItem value="Completed">Completed</SelectItem>
+                                <SelectItem value="Cancelled">Cancelled</SelectItem>
+                                <SelectItem value="Hiatus">Hiatus</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg mb-4">
+                          <p className="text-blue-300 text-sm mb-2">📺 One Season Per Entry System</p>
+                          <p className="text-blue-200 text-xs">Each season will be a separate database entry for better management.</p>
+                        </div>
+
+                        <div>
+                          <Label className="text-white">Series Base Name</Label>
+                          <Input
+                            value={formData.seriesBaseName}
+                            onChange={(e) => {
+                              const baseName = e.target.value;
+                              const seasonNum = formData.seasonNumber;
+                              setFormData({ 
+                                ...formData, 
+                                seriesBaseName: baseName,
+                                title: baseName && seasonNum ? `${baseName} Season ${seasonNum}` : baseName,
+                                seriesId: baseName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+                              });
+                            }}
+                            placeholder="Breaking Bad"
+                            className="bg-gray-800 text-white border-gray-700 mb-4"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <Label className="text-white">Season Number</Label>
+                            <Input
+                              value={formData.seasonNumber}
+                              onChange={(e) => {
+                                const seasonNum = e.target.value;
+                                const baseName = formData.seriesBaseName;
+                                setFormData({ 
+                                  ...formData, 
+                                  seasonNumber: seasonNum,
+                                  title: baseName && seasonNum ? `${baseName} Season ${seasonNum}` : baseName
+                                });
+                              }}
+                              placeholder="1"
+                              className="bg-gray-800 text-white border-gray-700"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-white">Episodes This Season</Label>
+                            <Input
+                              value={formData.episodesThisSeason}
+                              onChange={(e) => setFormData({ ...formData, episodesThisSeason: e.target.value })}
+                              placeholder="10"
+                              className="bg-gray-800 text-white border-gray-700"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-white">Total Seasons</Label>
+                            <Input
+                              value={formData.totalSeasons}
+                              onChange={(e) => setFormData({ ...formData, totalSeasons: e.target.value })}
+                              placeholder="4"
+                              className="bg-gray-800 text-white border-gray-700"
+                            />
+                          </div>
+                        </div>
+
+                        {formData.seriesBaseName && formData.seasonNumber && (
+                          <div className="mt-3 p-2 bg-green-900/20 border border-green-500/30 rounded">
+                            <p className="text-green-300 text-sm">✅ Title: {formData.title}</p>
+                            <p className="text-green-300 text-xs">Series ID: {formData.seriesId}</p>
+                          </div>
+                        )}
+
+                        <div>
+                          <Label className="text-white">Episode Info (Display Text)</Label>
+                          <Input
+                            value={formData.episodeInfo}
+                            onChange={(e) => setFormData({ ...formData, episodeInfo: e.target.value })}
+                            placeholder="[S01E05 – Added] or (Season 1) Complete"
+                            className="bg-gray-800 text-white border-gray-700"
+                          />
+                        </div>
                       </div>
                     )}
 
@@ -548,7 +663,7 @@ const Admin = () => {
 
                 {/* SECTION 2: Detail Page Information */}
                 <div className="border-b border-gray-700 pb-4">
-                  <h3 className="text-lg font-bold text-pink mb-4">Detail Page Information</h3>
+                  <h3 className="text-lg font-bold text-pink mb-4">{formData.isSeries ? 'Series' : 'Movie'} Detail Information</h3>
 
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -557,7 +672,7 @@ const Admin = () => {
                         <Input
                           value={formData.genre}
                           onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-                          placeholder="Action, Thriller"
+                          placeholder={formData.isSeries ? "Drama, Crime, Thriller" : "Action, Thriller"}
                           className="bg-gray-800 text-white border-gray-700"
                         />
                       </div>
@@ -573,38 +688,62 @@ const Admin = () => {
                       </div>
                     </div>
 
-                    <div>
-                      <Label className="text-white">Duration</Label>
-                      <Input
-                        value={formData.duration}
-                        onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                        placeholder="2h 15m"
-                        className="bg-gray-800 text-white border-gray-700"
-                      />
-                    </div>
+                    {!formData.isSeries ? (
+                      <div>
+                        <Label className="text-white">Duration</Label>
+                        <Input
+                          value={formData.duration}
+                          onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                          placeholder="2h 15m"
+                          className="bg-gray-800 text-white border-gray-700"
+                        />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-white">Episode Duration</Label>
+                          <Input
+                            value={formData.duration}
+                            onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                            placeholder="45m"
+                            className="bg-gray-800 text-white border-gray-700"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-white">Episodes This Season</Label>
+                          <Input
+                            value={formData.episodesThisSeason || ''}
+                            onChange={(e) => setFormData({ ...formData, episodesThisSeason: e.target.value })}
+                            placeholder="10"
+                            className="bg-gray-800 text-white border-gray-700"
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div>
-                      <Label className="text-white">Synopsis</Label>
+                      <Label className="text-white">{formData.isSeries ? 'Series Synopsis' : 'Movie Synopsis'}</Label>
                       <Textarea
                         value={formData.synopsis}
                         onChange={(e) => setFormData({ ...formData, synopsis: e.target.value })}
                         className="bg-gray-800 text-white border-gray-700"
                         rows={4}
+                        placeholder={formData.isSeries ? "Series plot and storyline..." : "Movie plot and storyline..."}
                       />
                     </div>
 
                     <div>
-                      <Label className="text-white">Cast (comma separated)</Label>
+                      <Label className="text-white">{formData.isSeries ? 'Main Cast' : 'Cast'} (comma separated)</Label>
                       <Input
                         value={formData.cast}
                         onChange={(e) => setFormData({ ...formData, cast: e.target.value })}
-                        placeholder="Tom Hardy, Charlize Theron"
+                        placeholder={formData.isSeries ? "Bryan Cranston, Aaron Paul, Anna Gunn" : "Tom Hardy, Charlize Theron"}
                         className="bg-gray-800 text-white border-gray-700"
                       />
                     </div>
 
                     <div>
-                      <Label className="text-white">Screenshots (comma separated URLs)</Label>
+                      <Label className="text-white">{formData.isSeries ? 'Series Screenshots' : 'Movie Screenshots'} (comma separated URLs)</Label>
                       <Textarea
                         value={formData.screenshots}
                         onChange={(e) => setFormData({ ...formData, screenshots: e.target.value })}
@@ -618,25 +757,47 @@ const Admin = () => {
 
                 {/* SECTION 3: Download Links */}
                 <div>
-                  <h3 className="text-lg font-bold text-pink mb-4">Download Links & Sizes</h3>
+                  <h3 className="text-lg font-bold text-pink mb-4">{formData.isSeries ? 'Series Downloads (Season ' + formData.seasonNumber + ')' : 'Movie Downloads'}</h3>
+                  
+                  {formData.isSeries && (
+                    <div className="mb-4 p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+                      <p className="text-blue-300 text-sm mb-2">📺 Series Download Structure:</p>
+                      <div className="text-xs space-y-2">
+                        <div className="bg-gray-800/50 p-2 rounded">
+                          <p className="text-yellow-300 font-medium">Format: Series Name [Season X] Language &#123;Type&#125; Quality [Size]</p>
+                          <p className="text-gray-400">Example: The Family Man [Season 1] Hindi &#123;Single Episodes&#125; 480p [150MB/E]</p>
+                          <p className="text-gray-400">Or: The Family Man [Season 1] Hindi &#123;Complete Zip&#125; 480p [1.4GB]</p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <p className="text-green-300 font-medium">📱 G-DIRECT [INSTANT]</p>
+                            <p className="text-gray-400">Individual episodes</p>
+                          </div>
+                          <div>
+                            <p className="text-purple-300 font-medium">📦 BATCH/ZIP</p>
+                            <p className="text-gray-400">Complete season pack</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="mb-4">
                     <Label className="text-white">Codec (Auto-fills quality details)</Label>
                     <Select value={formData.codec} onValueChange={(val) => {
                       const baseQuality = formData.quality === "custom" ? formData.customQuality : formData.quality;
                       const codecMap: Record<string, Record<string, string>> = {
-                        "none": {"360p": baseQuality, "480p": baseQuality, "720p10bit": baseQuality, "720p": baseQuality, "1080p": baseQuality, "1440p": baseQuality, "2160p": `4K ${baseQuality}`},
-                        "x264": {"360p": `${baseQuality} x264`, "480p": `${baseQuality} x264`, "720p10bit": `${baseQuality} x264`, "720p": `${baseQuality} x264`, "1080p": `${baseQuality} x264`, "1440p": `${baseQuality} x264`, "2160p": `4K ${baseQuality} x264`},
-                        "x265": {"360p": `${baseQuality} x265`, "480p": `${baseQuality} x265`, "720p10bit": `10Bit x265`, "720p": `${baseQuality} x265`, "1080p": `${baseQuality} x265`, "1440p": `${baseQuality} x265`, "2160p": `4K ${baseQuality} x265`},
-                        "H.264": {"360p": `${baseQuality} H.264`, "480p": `${baseQuality} H.264`, "720p10bit": `${baseQuality} H.264`, "720p": `${baseQuality} H.264`, "1080p": `${baseQuality} H.264`, "1440p": `${baseQuality} H.264`, "2160p": `4K ${baseQuality} H.264`},
-                        "H.265": {"360p": `${baseQuality} H.265`, "480p": `${baseQuality} H.265`, "720p10bit": `10Bit H.265`, "720p": `${baseQuality} H.265`, "1080p": `${baseQuality} H.265`, "1440p": `${baseQuality} H.265`, "2160p": `4K ${baseQuality} H.265`},
-                        "HEVC": {"360p": `${baseQuality} HEVC`, "480p": `${baseQuality} HEVC`, "720p10bit": `10Bit HEVC`, "720p": `${baseQuality} HEVC`, "1080p": `${baseQuality} HEVC`, "1440p": `${baseQuality} HEVC`, "2160p": `4K ${baseQuality} HEVC`},
+                        "none": {"480p": baseQuality, "720p10bit": baseQuality, "720p": baseQuality, "1080p": baseQuality, "1440p": baseQuality, "2160p": `4K ${baseQuality}`},
+                        "x264": {"480p": `${baseQuality} x264`, "720p10bit": `${baseQuality} x264`, "720p": `${baseQuality} x264`, "1080p": `${baseQuality} x264`, "1440p": `${baseQuality} x264`, "2160p": `4K ${baseQuality} x264`},
+                        "x265": {"480p": `${baseQuality} x265`, "720p10bit": `10Bit x265`, "720p": `${baseQuality} x265`, "1080p": `${baseQuality} x265`, "1440p": `${baseQuality} x265`, "2160p": `4K ${baseQuality} x265`},
+                        "H.264": {"480p": `${baseQuality} H.264`, "720p10bit": `${baseQuality} H.264`, "720p": `${baseQuality} H.264`, "1080p": `${baseQuality} H.264`, "1440p": `${baseQuality} H.264`, "2160p": `4K ${baseQuality} H.264`},
+                        "H.265": {"480p": `${baseQuality} H.265`, "720p10bit": `10Bit H.265`, "720p": `${baseQuality} H.265`, "1080p": `${baseQuality} H.265`, "1440p": `${baseQuality} H.265`, "2160p": `4K ${baseQuality} H.265`},
+                        "HEVC": {"480p": `${baseQuality} HEVC`, "720p10bit": `10Bit HEVC`, "720p": `${baseQuality} HEVC`, "1080p": `${baseQuality} HEVC`, "1440p": `${baseQuality} HEVC`, "2160p": `4K ${baseQuality} HEVC`},
                       };
                       const details = codecMap[val] || codecMap["none"];
                       setFormData({
                         ...formData,
                         codec: val,
-                        qualityDetail360p: details["360p"],
                         qualityDetail480p: details["480p"],
                         qualityDetail720p10bit: details["720p10bit"],
                         qualityDetail720p: details["720p"],
@@ -660,7 +821,7 @@ const Admin = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <Label className="text-white text-xs mb-2 block">All Downloads - Drag to Reorder</Label>
+                    <Label className="text-white text-xs mb-2 block">{formData.isSeries ? 'Series Downloads - Drag to Reorder' : 'Movie Downloads - Drag to Reorder'}</Label>
                     {formData.allDownloads.map((dl, idx) => (
                       <div 
                         key={dl.id} 
@@ -688,7 +849,7 @@ const Admin = () => {
                             setFormData({ ...formData, allDownloads: updated });
                           }
                         }}
-                        className="grid grid-cols-[auto_1fr_1fr_1fr_1fr_auto] gap-2 mb-2 cursor-move hover:bg-gray-800/50 p-1 rounded"
+                        className="grid grid-cols-[auto_1fr_1fr_1fr_1fr_1fr_1fr_auto] gap-2 mb-2 cursor-move hover:bg-gray-800/50 p-1 rounded"
                       >
                         <div className="flex items-center text-gray-500 text-lg cursor-grab active:cursor-grabbing">⋮⋮</div>
                         <Input 
@@ -698,19 +859,9 @@ const Admin = () => {
                             updated[idx].name = e.target.value; 
                             setFormData({ ...formData, allDownloads: updated }); 
                           }} 
-                          placeholder="Quality" 
+                          placeholder={formData.isSeries ? "480p" : "Quality"} 
                           className="bg-gray-800 text-white border-gray-700 text-xs" 
                           disabled={!dl.isCustom}
-                        />
-                        <Input 
-                          value={dl.link} 
-                          onChange={(e) => { 
-                            const updated = [...formData.allDownloads]; 
-                            updated[idx].link = e.target.value; 
-                            setFormData({ ...formData, allDownloads: updated }); 
-                          }} 
-                          placeholder="Link" 
-                          className="bg-gray-800 text-white border-gray-700 text-xs" 
                         />
                         <Input 
                           value={dl.qualityDetail} 
@@ -719,7 +870,7 @@ const Admin = () => {
                             updated[idx].qualityDetail = e.target.value; 
                             setFormData({ ...formData, allDownloads: updated }); 
                           }} 
-                          placeholder="Quality Detail" 
+                          placeholder={formData.isSeries ? "Single Episodes" : "WEB-DL"} 
                           className="bg-gray-800 text-white border-gray-700 text-xs" 
                         />
                         <Input 
@@ -729,8 +880,40 @@ const Admin = () => {
                             updated[idx].size = e.target.value; 
                             setFormData({ ...formData, allDownloads: updated }); 
                           }} 
-                          placeholder="Size" 
+                          placeholder={formData.isSeries ? "150MB/E or 1.4GB" : "2.6GB"} 
                           className="bg-gray-800 text-white border-gray-700 text-xs" 
+                        />
+                        <Input 
+                          value={dl.link} 
+                          onChange={(e) => { 
+                            const updated = [...formData.allDownloads]; 
+                            updated[idx].link = e.target.value; 
+                            setFormData({ ...formData, allDownloads: updated }); 
+                          }} 
+                          placeholder="Download Link" 
+                          className="bg-gray-800 text-white border-gray-700 text-xs" 
+                        />
+                        <Input 
+                          value={dl.batchLink || ''} 
+                          onChange={(e) => { 
+                            const updated = [...formData.allDownloads]; 
+                            updated[idx].batchLink = e.target.value; 
+                            setFormData({ ...formData, allDownloads: updated }); 
+                          }} 
+                          placeholder={formData.isSeries ? "Batch/ZIP Link" : ""} 
+                          className="bg-gray-800 text-white border-gray-700 text-xs" 
+                          disabled={!formData.isSeries}
+                        />
+                        <Input 
+                          value={dl.batchSize || ''} 
+                          onChange={(e) => { 
+                            const updated = [...formData.allDownloads]; 
+                            updated[idx].batchSize = e.target.value; 
+                            setFormData({ ...formData, allDownloads: updated }); 
+                          }} 
+                          placeholder={formData.isSeries ? "Batch Size" : ""} 
+                          className="bg-gray-800 text-white border-gray-700 text-xs" 
+                          disabled={!formData.isSeries}
                         />
                         {dl.isCustom ? (
                           <button 
@@ -747,10 +930,23 @@ const Admin = () => {
                       type="button" 
                       onClick={() => setFormData({ 
                         ...formData, 
-                        allDownloads: [...formData.allDownloads, {id: `custom-${Date.now()}`, name: "", link: "", qualityDetail: "", size: "", order: formData.allDownloads.length, isCustom: true}] 
+                        allDownloads: [...formData.allDownloads, {id: `custom-${Date.now()}`, name: "", link: "", qualityDetail: "", size: "", batchLink: "", batchSize: "", order: formData.allDownloads.length, isCustom: true}] 
                       })} 
                       className="text-pink text-xs mt-1 hover:text-pink-400"
                     >+ Add Custom Quality</button>
+                    
+                    {formData.isSeries && (
+                      <div className="mt-4 p-3 bg-gray-800/50 rounded-lg">
+                        <Label className="text-white text-sm mb-2 block">Series Download Guide:</Label>
+                        <div className="text-xs text-gray-400 space-y-1">
+                          <p>• <span className="text-green-300">G-Direct Link:</span> Individual episode downloads (instant)</p>
+                          <p>• <span className="text-purple-300">Batch/ZIP Link:</span> Complete season pack (optional)</p>
+                          <p>• <span className="text-yellow-300">Size Format:</span> "150MB/E" (per episode) or "1.4GB" (total size)</p>
+                          <p>• <span className="text-blue-300">Type:</span> "Single Episodes", "Complete Zip", "Season Pack"</p>
+                          <p>• <span className="text-orange-300">Single Link:</span> If only one link, it will show as main download</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -790,7 +986,7 @@ const Admin = () => {
                       {(formData.releaseDate || "NOVEMBER 18, 2025").toUpperCase()}
                     </div>
                     <div className="text-white text-xs font-bold leading-[1.4] text-left">
-                      Download {formData.title || "Movie Title"} {formData.episodeInfo && `${formData.episodeInfo} `}({formData.year || "2025"}) {formData.platform && formData.platform !== "none" && `${formData.platform}-`}{formData.quality === "custom" ? formData.customQuality : formData.quality} {(() => { const audio = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; const lang = formData.language === "custom" ? formData.customLanguage : formData.language; return audio === lang ? `{${lang}}` : `${audio} {${lang}}`; })()} {formData.allDownloads.filter(d => d.link).slice(0, 3).map(d => `${d.name} [${d.size}]`).join(' | ')}{formData.show4K ? " | 2160p 4K" : ""}
+                      Download {formData.title || (formData.isSeries ? "Series Title" : "Movie Title")} {formData.episodeInfo && `${formData.episodeInfo} `}({formData.year || "2025"}) {formData.isSeries ? `Season ${formData.seasonNumber} ` : ''}{formData.platform && formData.platform !== "none" && `${formData.platform}-`}{formData.quality === "custom" ? formData.customQuality : formData.quality} {(() => { const audio = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; const lang = formData.language === "custom" ? formData.customLanguage : formData.language; return audio === lang ? `{${lang}}` : `${audio} {${lang}}`; })()} {formData.allDownloads.filter(d => d.link).slice(0, 3).map(d => `${d.name} [${d.size}]`).join(' | ')}{formData.show4K ? " | 2160p 4K" : ""}
                     </div>
                   </div>
                 </div>
@@ -803,40 +999,53 @@ const Admin = () => {
               <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
                 <div className="space-y-4 text-xs">
                   <div className="text-white font-bold">
-                    MoviesWala.is | 1080p | Download {formData.title || "Movie Title"} ({formData.year || "2025"}) {formData.quality === "custom" ? formData.customQuality : formData.quality} {(() => { const audio = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; const lang = formData.language === "custom" ? formData.customLanguage : formData.language; return audio === lang ? `{${lang}}` : `${audio} {${lang}}`; })()} {formData.allDownloads.filter(d => d.link).slice(0, 3).map(d => `${d.name} [${d.size}]`).join(' | ')}{formData.show4K ? " | 2160p 4K" : ""}
+                    MoviesWala.is | 1080p | Download {formData.title || (formData.isSeries ? "Series Title" : "Movie Title")} ({formData.year || "2025"}) {formData.isSeries ? `Season ${formData.seasonNumber} ` : ''}{formData.quality === "custom" ? formData.customQuality : formData.quality} {(() => { const audio = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; const lang = formData.language === "custom" ? formData.customLanguage : formData.language; return audio === lang ? `{${lang}}` : `${audio} {${lang}}`; })()} {formData.allDownloads.filter(d => d.link).slice(0, 3).map(d => `${d.name} [${d.size}]`).join(' | ')}{formData.show4K ? " | 2160p 4K" : ""}
                   </div>
 
                   <div className="bg-white/[0.03] rounded-lg p-3">
-                    <h3 className="text-pink font-bold mb-2">Movie Specifications</h3>
+                    <h3 className="text-pink font-bold mb-2">{formData.isSeries ? 'Series Specifications' : 'Movie Specifications'}</h3>
                     <p className="text-gray-300 text-[10px] leading-relaxed">
-                      Download {formData.title || "Movie Title"} ({formData.year || "2025"}) {formData.quality === "custom" ? formData.customQuality : formData.quality} Full Movie ({formData.language === "custom" ? formData.customLanguage : formData.language}) {(() => { const qualities = formData.allDownloads.filter(d => d.link).map(d => d.name); return qualities.length > 1 ? qualities.slice(0, -1).join(', ') + ' & ' + qualities.slice(-1) : qualities.join('') || '480p, 720p & 1080p'; })()} Qualities. This is a {formData.movieOrigin} movie and Available {(() => { const sizes = formData.allDownloads.filter(d => d.link).map(d => `${d.name} in [${d.size}]`); return sizes.length > 1 ? sizes.slice(0, -1).join(', ') + ' & ' + sizes.slice(-1) : sizes.join('') || 'in 480p in [422MB], 720p in [1GB] & 1080p in [2.6GB]'; })()} in MKV Format. This Movie Is Now Available In {formData.language === "custom" ? formData.customLanguage : formData.language}. This is {formData.quality === "custom" ? formData.customQuality : formData.quality} Print with {formData.language === "custom" ? formData.customLanguage : formData.language} Audio{formData.subtitle !== "none" ? ` and ${formData.subtitle === "custom" ? formData.customSubtitle : formData.subtitle} Subtitles` : ""}.
+                      {formData.isSeries ? (
+                        `Download ${formData.title || "Series Title"} [Season ${formData.seasonNumber || "1"}] (${formData.year || "2025"}) ${formData.quality === "custom" ? formData.customQuality : formData.quality} Complete Episodes (${formData.language === "custom" ? formData.customLanguage : formData.language}) ${(() => { const qualities = formData.allDownloads.filter(d => d.link || d.batchLink).map(d => d.name); return qualities.length > 1 ? qualities.slice(0, -1).join(', ') + ' & ' + qualities.slice(-1) : qualities.join('') || '480p, 720p & 1080p'; })()} Qualities. This is a ${formData.movieOrigin} ${formData.seriesType.toLowerCase()} with ${formData.episodesThisSeason || "10"} episodes per season. Available in both Single Episodes and Complete Season Pack formats ${(() => { const downloads = formData.allDownloads.filter(d => d.link || d.batchLink); return downloads.length > 0 ? downloads.map(d => `${d.name} [${d.size}]`).join(', ') : '480p [150MB/E], 720p [350MB/E] & 1080p [22.5GB]'; })()} in MKV Format. This Series Is Now Available In ${formData.language === "custom" ? formData.customLanguage : formData.language}. This is ${formData.quality === "custom" ? formData.customQuality : formData.quality} Print with ${(() => { const audioType = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; return audioType.toLowerCase().includes('audio') ? audioType : `${audioType} Audio`; })()}${formData.subtitle !== "none" ? ` and ${formData.subtitle === "custom" ? formData.customSubtitle : formData.subtitle} Subtitles` : ""}.`
+                      ) : (
+                        `Download ${formData.title || "Movie Title"} (${formData.year || "2025"}) ${formData.quality === "custom" ? formData.customQuality : formData.quality} Full Movie (${formData.language === "custom" ? formData.customLanguage : formData.language}) ${(() => { const qualities = formData.allDownloads.filter(d => d.link).map(d => d.name); return qualities.length > 1 ? qualities.slice(0, -1).join(', ') + ' & ' + qualities.slice(-1) : qualities.join('') || '480p, 720p & 1080p'; })()} Qualities. This is a ${formData.movieOrigin} movie and Available ${(() => { const downloads = formData.allDownloads.filter(d => d.link); return downloads.length > 0 ? downloads.map(d => `${d.name} in [${d.size}]`).join(', ') : 'in 480p in [422MB], 720p in [1GB] & 1080p in [2.6GB]'; })()} in MKV Format. This Movie Is Now Available In ${formData.language === "custom" ? formData.customLanguage : formData.language}. This is ${formData.quality === "custom" ? formData.customQuality : formData.quality} Print with ${(() => { const audioType = formData.audioType === "custom" ? formData.customAudioType : formData.audioType; return audioType.toLowerCase().includes('audio') ? audioType : `${audioType} Audio`; })()}${formData.subtitle !== "none" ? ` and ${formData.subtitle === "custom" ? formData.customSubtitle : formData.subtitle} Subtitles` : ""}.`
+                      )}
                     </p>
                   </div>
 
                   <div className="bg-white/[0.03] rounded-lg p-3">
-                    <h3 className="text-pink font-bold mb-2">Movie Info</h3>
+                    <h3 className="text-pink font-bold mb-2">{formData.isSeries ? 'Series Info' : 'Movie Info'}</h3>
                     <div className="space-y-1 text-[10px]">
                       <div className="flex"><span className="w-[35%] text-gray-400">IMDb Rating:</span><span className="text-white">{formData.rating || "0.0"}/10</span></div>
-                      <div className="flex"><span className="w-[35%] text-gray-400">Movie Name:</span><span className="text-white">{formData.title || "Movie Title"}</span></div>
-                      <div className="flex"><span className="w-[35%] text-gray-400">Release Year:</span><span className="text-white">{formData.year || "2025"}</span></div>
-                      <div className="flex"><span className="w-[35%] text-gray-400">Runtime:</span><span className="text-white">{formData.duration || "N/A"}</span></div>
+                      <div className="flex"><span className="w-[35%] text-gray-400">{formData.isSeries ? 'Series Name:' : 'Movie Name:'}</span><span className="text-white">{formData.title || (formData.isSeries ? "Series Title" : "Movie Title")}</span></div>
+                      <div className="flex"><span className="w-[35%] text-gray-400">{formData.isSeries ? 'First Air Date:' : 'Release Year:'}</span><span className="text-white">{formData.year || "2025"}</span></div>
+                      {formData.isSeries ? (
+                        <>
+                          <div className="flex"><span className="w-[35%] text-gray-400">Season:</span><span className="text-white">Season {formData.seasonNumber || "1"}</span></div>
+                          <div className="flex"><span className="w-[35%] text-gray-400">Episodes:</span><span className="text-white">{formData.episodesThisSeason || formData.totalEpisodes || "N/A"} Episodes</span></div>
+                          <div className="flex"><span className="w-[35%] text-gray-400">Status:</span><span className="text-white">{formData.seriesStatus}</span></div>
+                          <div className="flex"><span className="w-[35%] text-gray-400">Total Seasons:</span><span className="text-white">{formData.totalSeasons || "N/A"}</span></div>
+                        </>
+                      ) : (
+                        <div className="flex"><span className="w-[35%] text-gray-400">Runtime:</span><span className="text-white">{formData.duration || "N/A"}</span></div>
+                      )}
                       <div className="flex"><span className="w-[35%] text-gray-400">Genre:</span><span className="text-white">{formData.genre || "N/A"}</span></div>
                       <div className="flex"><span className="w-[35%] text-gray-400">Language:</span><span className="text-white">{formData.language === "custom" ? formData.customLanguage : formData.language} [{formData.audioType === "custom" ? formData.customAudioType : formData.audioType}]</span></div>
                       <div className="flex"><span className="w-[35%] text-gray-400">Subtitle:</span><span className="text-white">{formData.subtitle === "custom" ? formData.customSubtitle : formData.subtitle === "none" ? "N/A" : formData.subtitle}</span></div>
-                      <div className="flex"><span className="w-[35%] text-gray-400">Size:</span><span className="text-white">{(() => { const sizes = formData.allDownloads.filter(d => d.link).map(d => d.size); return sizes.join(' || ') || '422MB || 1GB || 2.6GB'; })()}</span></div>
-                      <div className="flex"><span className="w-[35%] text-gray-400">Quality:</span><span className="text-white">{formData.allDownloads.filter(d => d.link).map(d => d.name).join(' || ') || '480p || 720p || 1080p'} - {formData.quality === "custom" ? formData.customQuality : formData.quality}</span></div>
+                      <div className="flex"><span className="w-[35%] text-gray-400">Size:</span><span className="text-white">{(() => { const downloads = formData.allDownloads.filter(d => d.link || d.batchLink); return downloads.length > 0 ? downloads.map(d => d.size).join(' || ') : '422MB || 1GB || 2.6GB'; })()}</span></div>
+                      <div className="flex"><span className="w-[35%] text-gray-400">Quality:</span><span className="text-white">{(() => { const downloads = formData.allDownloads.filter(d => d.link || d.batchLink); return downloads.length > 0 ? downloads.map(d => d.name).join(' || ') : '480p || 720p || 1080p'; })()} - {formData.quality === "custom" ? formData.customQuality : formData.quality}</span></div>
                     </div>
                   </div>
 
                   <div className="bg-white/[0.03] rounded-lg p-3">
-                    <h3 className="text-pink font-bold mb-2">Movie Synopsis</h3>
+                    <h3 className="text-pink font-bold mb-2">{formData.isSeries ? 'Series Synopsis' : 'Movie Synopsis'}</h3>
                     <p className="text-gray-400 text-[10px] leading-relaxed">
-                      {formData.synopsis || "Movie synopsis will appear here..."}
+                      {formData.synopsis || (formData.isSeries ? "Series synopsis will appear here..." : "Movie synopsis will appear here...")}
                     </p>
                   </div>
 
                   <div>
-                    <h3 className="text-pink font-bold mb-2 text-center">Screenshots: (Must See Before Downloading)...</h3>
+                    <h3 className="text-pink font-bold mb-2 text-center">{formData.isSeries ? 'Series Screenshots: (Must See Before Downloading)...' : 'Screenshots: (Must See Before Downloading)...'}</h3>
                     <div className="space-y-2">
                       {formData.screenshots ? (
                         formData.screenshots.split(',').map((url: string, idx: number) => (
@@ -867,10 +1076,30 @@ const Admin = () => {
                       return `DOWNLOAD ORG Dual Audio (${lang} में)`;
                     })()}</h3>
                     <div className="space-y-4">
-                      {formData.allDownloads.filter(dl => dl.link).map((dl, idx) => (
+                      {formData.allDownloads.filter(dl => dl.link || dl.batchLink).map((dl, idx) => (
                         <div key={idx}>
-                          <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} {dl.name} {dl.qualityDetail} [{dl.size}]</p>
-                          <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
+                          {formData.isSeries ? (
+                            <div className="space-y-3">
+                              <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} [Season {formData.seasonNumber}] {formData.language === "custom" ? formData.customLanguage : formData.language} &#123;{dl.qualityDetail || 'Single Episodes'}&#125; {dl.name} [{dl.size}]</p>
+                              <div className="flex gap-2 justify-center">
+                                {dl.link && (
+                                  <button className="bg-gradient-to-r from-green-500 to-teal-500 text-white font-bold py-2 px-4 text-[9px] rounded-lg">
+                                    📱 Download Ep's
+                                  </button>
+                                )}
+                                {dl.batchLink && (
+                                  <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 text-[9px] rounded-lg">
+                                    📦 Download.ZIP [{dl.batchSize || (dl.size.includes('/E') ? dl.size.replace('/E', '') : dl.size)}]
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <p className="text-white text-[10px] mb-2 text-center font-medium">{formData.title} ({formData.year}) {`{${formData.language === "custom" ? formData.customLanguage : formData.language}}`} {dl.name} {dl.qualityDetail} [{dl.size}]</p>
+                              <button className="w-2/3 mx-auto block bg-gradient-to-r from-pink to-magenta text-white font-bold py-2 text-[10px] rounded-lg opacity-80">Download Now</button>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
