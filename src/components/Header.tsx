@@ -14,24 +14,23 @@ const navLinks = [
     name: "📹 Featured", 
     href: "/featured",
     dropdown: [
-      { name: "New Releases", href: "/featured/new" },
-      { name: "Trending", href: "/featured/trending" },
-      { name: "Top Rated", href: "/featured/top-rated" },
-      { name: "Popular", href: "/featured/popular" },
+      { name: "Trending", href: "/category/trending" },
+      { name: "Top IMDb", href: "/top-imdb" },
+      { name: "Web Series", href: "/category/web-series" },
+      { name: "Anime", href: "/category/anime" },
     ]
   },
   { 
     name: "🌐 Genre", 
     href: "/genres",
     dropdown: [
-      { name: "Action", href: "/genre/action" },
-      { name: "Horror", href: "/genre/horror" },
-      { name: "Comedy", href: "/genre/comedy" },
-      { name: "Sci-Fi", href: "/genre/sci-fi" },
-      { name: "Drama", href: "/genre/drama" },
-      { name: "Anime", href: "/genre/anime" },
-      { name: "Thriller", href: "/genre/thriller" },
-      { name: "Romance", href: "/genre/romance" },
+      { name: "Action", href: "/category/action" },
+      { name: "Horror", href: "/category/horror" },
+      { name: "Comedy", href: "/category/comedy" },
+      { name: "Sci-Fi", href: "/category/sci-fi" },
+      { name: "Drama", href: "/category/drama" },
+      { name: "Anime", href: "/category/anime" },
+      { name: "K-Drama", href: "/category/k-drama" },
     ]
   },
   { 
@@ -46,13 +45,13 @@ const navLinks = [
     ]
   },
   { 
-    name: "By Qualities", 
-    href: "/qualities",
+    name: "By Platform", 
+    href: "/platforms",
     dropdown: [
-      { name: "4K Ultra HD", href: "/quality/4k" },
-      { name: "1080p HD", href: "/quality/1080p" },
-      { name: "720p HD", href: "/quality/720p" },
-      { name: "Dual Audio", href: "/quality/dual-audio" },
+      { name: "Netflix", href: "/category/netflix" },
+      { name: "Amazon Prime", href: "/category/amazon-prime" },
+      { name: "Disney+", href: "/category/disney" },
+      { name: "Jiohotstar", href: "/category/jiohotstar" },
     ]
   },
 ];

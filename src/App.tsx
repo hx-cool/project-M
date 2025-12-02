@@ -22,6 +22,11 @@ import KDramaMovies from "./pages/KDramaMovies";
 import AmazonPrimeMovies from "./pages/AmazonPrimeMovies";
 import NetflixMovies from "./pages/NetflixMovies";
 import EnglishMovies from "./pages/EnglishMovies";
+import BollywoodMovies from "./pages/BollywoodMovies";
+import HollywoodMovies from "./pages/HollywoodMovies";
+import SouthIndianMovies from "./pages/SouthIndianMovies";
+import DisneyMovies from "./pages/DisneyMovies";
+import JiohotstarMovies from "./pages/JiohotstarMovies";
 import Movies from "./pages/Movies";
 import Series from "./pages/Series";
 import Genres from "./pages/Genres";
@@ -57,6 +62,11 @@ const App = () => (
               <Route path="/category/amazon-prime" element={<AmazonPrimeMovies />} />
               <Route path="/category/netflix" element={<NetflixMovies />} />
               <Route path="/category/english" element={<EnglishMovies />} />
+              <Route path="/category/bollywood" element={<BollywoodMovies />} />
+              <Route path="/category/hollywood" element={<HollywoodMovies />} />
+              <Route path="/category/south-indian" element={<SouthIndianMovies />} />
+              <Route path="/category/disney" element={<DisneyMovies />} />
+              <Route path="/category/jiohotstar" element={<JiohotstarMovies />} />
               <Route path="/movies" element={<Movies />} />
               <Route path="/series" element={<Series />} />
               <Route path="/genres" element={<Genres />} />

@@ -5,9 +5,9 @@ import { BackToTop } from "@/components/BackToTop";
 import { Pagination } from "@/components/Pagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Send } from "lucide-react";
+import { Search, Send, Download } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSearch } from "@/contexts/SearchContext";
 
 interface Movie {
@@ -43,6 +43,7 @@ const CategoryPage = ({ categoryName, movies: propMovies, description }: Categor
   const [movies, setMovies] = useState<Movie[]>(propMovies || []);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
   const { setSearchQuery } = useSearch();
 
   useEffect(() => {
@@ -67,12 +68,18 @@ const CategoryPage = ({ categoryName, movies: propMovies, description }: Categor
         // Apply additional filters for non-genre categories
         let filtered = data;
         if (catLower.includes('hindi')) filtered = data.filter((m: any) => m.movieOrigin === 'Bollywood');
+        else if (catLower.includes('bollywood')) filtered = data.filter((m: any) => m.movieOrigin === 'Bollywood');
         else if (catLower.includes('english')) filtered = data.filter((m: any) => m.movieOrigin === 'Hollywood');
+        else if (catLower.includes('hollywood')) filtered = data.filter((m: any) => m.movieOrigin === 'Hollywood');
+        else if (catLower.includes('south indian')) filtered = data.filter((m: any) => m.movieOrigin === 'South Indian');
         else if (catLower.includes('anime')) filtered = data.filter((m: any) => m.movieOrigin === 'Anime');
         else if (catLower.includes('k-drama') || catLower.includes('korean')) filtered = data.filter((m: any) => m.movieOrigin === 'Korean');
         else if (catLower.includes('netflix')) filtered = data.filter((m: any) => m.platform === 'Netflix');
         else if (catLower.includes('amazon') || catLower.includes('prime')) filtered = data.filter((m: any) => m.platform === 'Amazon Prime');
+        else if (catLower.includes('disney')) filtered = data.filter((m: any) => m.platform === 'Disney');
+        else if (catLower.includes('jiohotstar')) filtered = data.filter((m: any) => m.platform === 'Jiohotstar');
         else if (catLower.includes('web series') || catLower.includes('series')) filtered = data.filter((m: any) => m.isSeries === true);
+        else if (catLower.includes('trending')) filtered = data.filter((m: any) => m.trending === true);
         
         console.log('Filtered to:', filtered.length, 'movies');
         
@@ -151,11 +158,11 @@ const CategoryPage = ({ categoryName, movies: propMovies, description }: Categor
       
       
       {/* Category Section with Search */}
-      <div className="bg-[#191919] py-6">
+      <div className="bg-[#0F0F0F] py-6">
         <div className="container mx-auto px-4">
           {/* White Search Bar */}
-          <div className="max-w-4xl mx-auto mb-4">
-            <div className="flex items-center gap-4">
+          <div className="max-w-4xl mx-auto mb-6">
+            <div className="flex items-center gap-2">
               <div className="relative flex-1">
                 <div className="absolute inset-0 rounded-md bg-gradient-to-r from-pink to-magenta p-px">
                   <div className="h-full w-full rounded-md bg-gray-100"></div>
@@ -182,42 +189,36 @@ const CategoryPage = ({ categoryName, movies: propMovies, description }: Categor
           
           {/* Mobile Category Section */}
           <div className="md:hidden">
-            {/* Join Telegram Button */}
-            <div className="flex justify-center mb-4">
-              <Button className="bg-gradient-to-r from-pink to-magenta border border-pink/30 text-white font-medium px-5 py-2 rounded-xl shadow-[0_0_4px_rgba(255,0,128,0.15)] flex items-center gap-2 transition-all duration-300">
-                <Send className="h-3.5 w-3.5" />
+            {/* Buttons */}
+            <div className="flex justify-center gap-2 mb-4">
+              <Button className="bg-[#0088cc] hover:bg-[#0077b3] text-white font-medium px-4 py-2.5 rounded-lg text-[10px] flex items-center gap-1.5 transition-all duration-300">
+                <Send className="h-3 w-3" />
                 Join Telegram
+              </Button>
+              <Button className="bg-[#df9917] hover:bg-[#c88815] text-white font-medium px-4 py-2.5 rounded-lg text-[10px] flex items-center gap-1.5 transition-all duration-300">
+                <Download className="h-3 w-3" />
+                How to Download
               </Button>
             </div>
             
-            {/* First Row */}
-            <div className="grid grid-cols-3 gap-2 mb-2.5 max-w-xs mx-auto">
+            <div className="flex flex-wrap gap-2 justify-center px-4">
               {[
-                { name: 'Anime', link: '/category/anime' },
-                { name: 'Trending', link: '/category/trending' },
-                { name: 'K-Drama', link: '/category/k-drama' }
-              ].map((category) => (
-                <a
-                  key={category.name}
-                  href={category.link}
-                  className="px-2.5 py-1.5 bg-surface/20 border border-pink/30 text-white text-xs font-medium rounded-xl shadow-[0_0_3px_rgba(255,0,128,0.1)] hover:bg-surface/30 transition-all duration-300 text-center"
-                >
-                  {category.name}
-                </a>
-              ))}
-            </div>
-            
-            {/* Second Row */}
-            <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
-              {[
+                { name: 'HOLLYWOOD', link: '/category/hollywood' },
+                { name: 'BOLLYWOOD', link: '/category/bollywood' },
+                { name: 'SOUTH INDIAN', link: '/category/south-indian' },
+                { name: 'NETFLIX', link: '/category/netflix' },
                 { name: 'AMZN Prime', link: '/category/amazon-prime' },
-                { name: 'Netflix', link: '/category/netflix' },
-                { name: 'English', link: '/category/english' }
+                { name: 'DISNEY', link: '/category/disney' },
+                { name: 'JIOHOTSTAR', link: '/category/jiohotstar' },
+                { name: 'TRENDING', link: '/category/trending' },
+                { name: 'WEB SERIES', link: '/category/web-series' },
+                { name: 'ANIME', link: '/category/anime' },
+                { name: 'K-DRAMA', link: '/category/k-drama' }
               ].map((category) => (
                 <a
                   key={category.name}
                   href={category.link}
-                  className="px-2.5 py-1.5 bg-surface/20 border border-pink/30 text-white text-xs font-medium rounded-xl shadow-[0_0_3px_rgba(255,0,128,0.1)] hover:bg-surface/30 transition-all duration-300 text-center"
+                  className="px-4 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-[10px] font-bold uppercase rounded-lg transition-all duration-300 text-center whitespace-nowrap"
                 >
                   {category.name}
                 </a>
@@ -228,27 +229,37 @@ const CategoryPage = ({ categoryName, movies: propMovies, description }: Categor
           {/* Desktop Category Buttons */}
           <div className="hidden md:block max-w-6xl mx-auto mt-2">
             {/* Row 1 */}
-            <div className="flex flex-wrap gap-4 justify-center mb-4">
-              <a href="/category/netflix" className="px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Netflix</a>
-              <a href="/category/amazon-prime" className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Amazon Prime</a>
-              <a href="/category/disney" className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Disney</a>
-              <a href="/category/jiohotstar" className="px-6 py-2.5 bg-gradient-to-r from-blue-700 to-indigo-700 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Jiohotstar</a>
-            </div>
-            {/* Row 2 */}
-            <div className="flex flex-wrap gap-4 justify-center">
+            <div className="flex flex-wrap gap-3 justify-center mb-3">
               {[
-                { name: 'Trending', link: '/category/trending' },
-                { name: 'Hollywood', link: '/category/hollywood' },
-                { name: 'Bollywood', link: '/category/bollywood' },
-                { name: 'South Indian', link: '/category/south-indian' },
-                { name: 'Web Series', link: '/category/web-series' },
-                { name: 'Anime', link: '/category/anime' },
-                { name: 'K-Drama', link: '/category/k-drama' }
+                { name: 'TRENDING', link: '/category/trending' },
+                { name: 'HOLLYWOOD', link: '/category/hollywood' },
+                { name: 'BOLLYWOOD', link: '/category/bollywood' },
+                { name: 'SOUTH INDIAN', link: '/category/south-indian' },
+                { name: 'ANIME', link: '/category/anime' },
+                { name: 'WEB SERIES', link: '/category/web-series' },
+                { name: 'K-DRAMA', link: '/category/k-drama' }
               ].map((category) => (
                 <a
                   key={category.name}
                   href={category.link}
-                  className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-red-600 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block"
+                  className={`px-5 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-xs font-bold uppercase rounded-xl hover:scale-x-105 hover:shadow-[0_8px_20px_rgba(255,20,147,0.5)] transition-all duration-300 inline-block whitespace-nowrap ${location.pathname === category.link ? 'shadow-[0_8px_20px_rgba(255,20,147,0.6)]' : ''}`}
+                >
+                  {category.name}
+                </a>
+              ))}
+            </div>
+            {/* Row 2 */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              {[
+                { name: 'NETFLIX', link: '/category/netflix' },
+                { name: 'AMZN Prime Video', link: '/category/amazon-prime' },
+                { name: 'DISNEY', link: '/category/disney' },
+                { name: 'JIOHOTSTAR', link: '/category/jiohotstar' }
+              ].map((category) => (
+                <a
+                  key={category.name}
+                  href={category.link}
+                  className={`px-5 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-xs font-bold uppercase rounded-xl hover:scale-x-105 hover:shadow-[0_8px_20px_rgba(255,20,147,0.5)] transition-all duration-300 inline-block whitespace-nowrap ${location.pathname === category.link ? 'shadow-[0_8px_20px_rgba(255,20,147,0.6)]' : ''}`}
                 >
                   {category.name}
                 </a>
