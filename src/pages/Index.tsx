@@ -7,7 +7,7 @@ import { Pagination } from "@/components/Pagination";
 import { Footer } from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Send, Tv, TrendingUp, Heart, Play, Monitor, Globe, X } from "lucide-react";
+import { Search, Send, Tv, TrendingUp, Heart, Play, Monitor, Globe, X, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSearch } from "@/contexts/SearchContext";
 import { useMovieSearch } from "@/hooks/useMovieSearch";
@@ -185,14 +185,14 @@ const Index = () => {
       <Header />
 
       {/* Category Section with Search */}
-      <div className="bg-[#191919] py-3">
+      <div className="bg-[#0F0F0F] py-6">
         <div className="max-w-7xl mx-auto px-4">
           {/* White Search Bar */}
-          <div className="max-w-4xl mx-auto mb-4">
-            <div className="flex items-center gap-4">
+          <div className="max-w-4xl mx-auto mb-6">
+            <div className="flex items-center gap-2">
               <div className="relative flex-1">
                 <div className="absolute inset-0 rounded-md bg-gradient-to-r from-pink to-magenta p-px">
-                  <div className="h-full w-full rounded-md bg-white"></div>
+                  <div className="h-full w-full rounded-md bg-gray-200"></div>
                 </div>
                 <Search className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
                 <Input
@@ -216,77 +216,107 @@ const Index = () => {
 
           {/* Mobile Category Section */}
           <div className="md:hidden">
-            {/* Join Telegram Button */}
-            <div className="flex justify-center mb-4">
-              <Button className="bg-gradient-to-r from-pink to-magenta border border-pink/30 text-white font-medium px-5 py-2 rounded-xl shadow-[0_0_4px_rgba(255,0,128,0.15)] flex items-center gap-2 transition-all duration-300">
-                <Send className="h-3.5 w-3.5" />
+            {/* Buttons */}
+            <div className="flex justify-center gap-2 mb-4">
+              <Button className="bg-[#0088cc] hover:bg-[#0077b3] text-white font-medium px-4 py-2.5 rounded-lg text-[10px] flex items-center gap-1.5 transition-all duration-300">
+                <Send className="h-3 w-3" />
                 Join Telegram
+              </Button>
+              <Button className="bg-[#df9917] hover:bg-[#c88815] text-white font-medium px-4 py-2.5 rounded-lg text-[10px] flex items-center gap-1.5 transition-all duration-300">
+                <Download className="h-3 w-3" />
+                How to Download
               </Button>
             </div>
 
-            {/* First Row */}
-            <div className="grid grid-cols-3 gap-2 mb-2.5 max-w-xs mx-auto">
+            <div className="flex flex-wrap gap-2 justify-center px-4">
               {[
-                { name: 'Anime', link: '/category/anime' },
-                { name: 'Trending', link: '/category/trending' },
-                { name: 'K-Drama', link: '/category/k-drama' }
-              ].map((category) => (
-                <a
-                  key={category.name}
-                  href={category.link}
-                  className="px-2.5 py-1.5 bg-surface/20 border border-pink/30 text-white text-xs font-medium rounded-xl shadow-[0_0_3px_rgba(255,0,128,0.1)] hover:bg-surface/30 transition-all duration-300 text-center"
-                >
-                  {category.name}
-                </a>
-              ))}
-            </div>
-
-            {/* Second Row */}
-            <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
-              {[
+                { name: 'HOLLYWOOD', link: '/category/hollywood' },
+                { name: 'BOLLYWOOD', link: '/category/bollywood' },
+                { name: 'SOUTH INDIAN', link: '/category/south-indian' },
+                { name: 'NETFLIX', link: '/category/netflix' },
                 { name: 'AMZN Prime', link: '/category/amazon-prime' },
-                { name: 'Netflix', link: '/category/netflix' },
-                { name: 'English', link: '/category/english' }
+                { name: 'DISNEY', link: '/category/disney' },
+                { name: 'JIOHOTSTAR', link: '/category/jiohotstar' },
+                { name: 'TRENDING', link: '/category/trending' },
+                { name: 'WEB SERIES', link: '/category/web-series' },
+                { name: 'ANIME', link: '/category/anime' },
+                { name: 'K-DRAMA', link: '/category/k-drama' }
               ].map((category) => (
                 <a
                   key={category.name}
                   href={category.link}
-                  className="px-2.5 py-1.5 bg-surface/20 border border-pink/30 text-white text-xs font-medium rounded-xl shadow-[0_0_3px_rgba(255,0,128,0.1)] hover:bg-surface/30 transition-all duration-300 text-center"
+                  className="px-4 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-[10px] font-bold uppercase rounded-lg transition-all duration-300 text-center whitespace-nowrap"
                 >
                   {category.name}
                 </a>
               ))}
             </div>
-
-
           </div>
 
           {/* Desktop Category Buttons */}
-          <div className="hidden md:flex flex-wrap gap-3 justify-center max-w-6xl mx-auto">
-            {[
-              { name: 'Action', link: '/category/action' },
-              { name: 'Horror', link: '/category/horror' },
-              { name: 'Comedy', link: '/category/comedy' },
-              { name: 'Sci-Fi', link: '/category/sci-fi' },
-              { name: 'Drama', link: '/category/drama' },
-              { name: 'Hindi', link: '/category/hindi' },
-              { name: 'Web Series', link: '/category/web-series' },
-              { name: 'Anime', link: '#' },
-              { name: 'Dual Audio', link: '#' },
-              { name: 'Bollywood', link: '/category/hindi' },
-              { name: 'Hollywood', link: '/category/action' },
-              { name: '4K', link: '#' },
-              { name: 'English', link: '#' },
-              { name: 'TV Shows', link: '/category/web-series' }
-            ].map((category) => (
-              <a
-                key={category.name}
-                href={category.link}
-                className="px-4 py-2 bg-surface/80 backdrop-blur-sm border border-border/50 text-foreground/90 text-sm font-medium rounded-full hover:bg-pink/10 hover:border-pink hover:text-pink hover:glow-pink transition-all duration-300 hover:scale-105 inline-block"
-              >
-                {category.name}
-              </a>
-            ))}
+          <div className="hidden md:block max-w-6xl mx-auto mt-2">
+            {/* Buttons */}
+            <div className="flex justify-center gap-3 mb-4">
+              <Button className="bg-[#0088cc] hover:bg-[#0077b3] text-white font-medium px-6 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition-all duration-300">
+                <Send className="h-4 w-4" />
+                Join Telegram
+              </Button>
+              <Button className="bg-[#df9917] hover:bg-[#c88815] text-white font-medium px-6 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition-all duration-300">
+                <Download className="h-4 w-4" />
+                How to Download
+              </Button>
+            </div>
+            {/* Row 1 */}
+            <div className="flex flex-wrap gap-3 justify-center mb-3">
+              {[
+                { name: 'HOLLYWOOD', link: '/category/hollywood' },
+                { name: 'BOLLYWOOD', link: '/category/bollywood' },
+                { name: 'SOUTH INDIAN', link: '/category/south-indian' },
+                { name: 'HORROR', link: '/category/horror' }
+              ].map((category) => (
+                <a
+                  key={category.name}
+                  href={category.link}
+                  className="px-5 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-xs font-bold uppercase rounded-xl hover:scale-x-105 hover:shadow-[0_8px_20px_rgba(255,20,147,0.5)] transition-all duration-300 inline-block whitespace-nowrap"
+                >
+                  {category.name}
+                </a>
+              ))}
+            </div>
+            {/* Row 2 */}
+            <div className="flex flex-wrap gap-3 justify-center mb-3">
+              {[
+                { name: 'NETFLIX', link: '/category/netflix' },
+                { name: 'AMZN Prime', link: '/category/amazon-prime' },
+                { name: 'DISNEY', link: '/category/disney' },
+                { name: 'JIOHOTSTAR', link: '/category/jiohotstar' }
+              ].map((category) => (
+                <a
+                  key={category.name}
+                  href={category.link}
+                  className="px-5 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-xs font-bold uppercase rounded-xl hover:scale-x-105 hover:shadow-[0_8px_20px_rgba(255,20,147,0.5)] transition-all duration-300 inline-block whitespace-nowrap"
+                >
+                  {category.name}
+                </a>
+              ))}
+            </div>
+            {/* Row 3 */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              {[
+                { name: 'ANIME', link: '/category/anime' },
+                { name: 'TRENDING', link: '/category/trending' },
+                { name: 'WEB SERIES', link: '/category/web-series' },
+                { name: 'K-DRAMA', link: '/category/k-drama' }
+              ].map((category) => (
+                <a
+                  key={category.name}
+                  href={category.link}
+                  className="px-5 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-xs font-bold uppercase rounded-xl hover:scale-x-105 hover:shadow-[0_8px_20px_rgba(255,20,147,0.5)] transition-all duration-300 inline-block whitespace-nowrap"
+                >
+                  {category.name}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>
