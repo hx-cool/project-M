@@ -8,42 +8,41 @@ datasource db {
 }
 
 model Movie {
-  id              Int      @id @default(autoincrement())
-  title           String
-  slug            String   @unique
-  year            String?
-  rating          Float?
-  duration        String?
-  synopsis        String?  @db.Text
-  posterUrl       String?
-  quality         String?
-  customQuality   String?
-  audioType       String?
-  customAudioType String?
-  language        String?
-  customLanguage  String?
-  subtitle        String?
-  customSubtitle  String?
-  platform        String?
-  isSeries        Boolean  @default(false)
-  episodeInfo     String?
-  seasonNumber    Int?
-  seriesId        String?
+  id                 Int             @id @default(autoincrement())
+  title              String
+  slug               String          @unique
+  year               String?
+  rating             Float?
+  duration           String?
+  synopsis           String?
+  posterUrl          String?
+  quality            String?
+  customQuality      String?
+  audioType          String?
+  customAudioType    String?
+  language           String?
+  customLanguage     String?
+  subtitle           String?
+  customSubtitle     String?
+  platform           String?
+  isSeries           Boolean         @default(false)
+  episodeInfo        String?
+  seasonNumber       Int?
+  seriesId           String?
   episodesThisSeason Int?
-  releaseDate     String?
-  movieOrigin     String?
-  codec           String?
-  show4K          Boolean  @default(false)
-  views           Int      @default(0)
-  isEditorPick    Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  genres      MovieGenre[]
-  cast        MovieCast[]
-  downloads   Download[]
-  screenshots Screenshot[]
-  categories  MovieCategory[]
+  releaseDate        String?
+  movieOrigin        String?
+  codec              String?
+  show4K             Boolean         @default(false)
+  views              Int             @default(0)
+  isEditorPick       Boolean         @default(false)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  downloads          Download[]
+  cast               MovieCast[]
+  categories         MovieCategory[]
+  genres             MovieGenre[]
+  screenshots        Screenshot[]
 
   @@map("movies")
 }
@@ -59,8 +58,8 @@ model Genre {
 model MovieGenre {
   movieId Int
   genreId Int
-  movie   Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
   genre   Genre @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  movie   Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
   @@id([movieId, genreId])
   @@map("movie_genres")
@@ -77,8 +76,8 @@ model CastMember {
 model MovieCast {
   movieId Int
   castId  Int
-  movie   Movie      @relation(fields: [movieId], references: [id], onDelete: Cascade)
   cast    CastMember @relation(fields: [castId], references: [id], onDelete: Cascade)
+  movie   Movie      @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
   @@id([movieId, castId])
   @@map("movie_cast")
@@ -90,7 +89,7 @@ model Download {
   resolution    String
   qualityDetail String?
   size          String?
-  link          String? @db.Text
+  link          String?
   order         Int     @default(999)
   movie         Movie   @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
@@ -100,7 +99,7 @@ model Download {
 model Screenshot {
   id           Int    @id @default(autoincrement())
   movieId      Int
-  url          String @db.Text
+  url          String
   displayOrder Int?
   movie        Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
@@ -119,8 +118,8 @@ model Category {
 model MovieCategory {
   movieId    Int
   categoryId Int
-  movie      Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  movie      Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
 
   @@id([movieId, categoryId])
   @@map("movie_categories")

@@ -228,14 +228,26 @@ const CategoryPage = ({ categoryName, movies: propMovies, description }: Categor
           
           {/* Desktop Category Buttons */}
           <div className="hidden md:block max-w-6xl mx-auto mt-2">
+            {/* Buttons */}
+            <div className="flex justify-center gap-3 mb-4">
+              <Button className="bg-[#0088cc] hover:bg-[#0077b3] text-white font-medium px-6 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition-all duration-300">
+                <Send className="h-4 w-4" />
+                Join Telegram
+              </Button>
+              <Button className="bg-[#df9917] hover:bg-[#c88815] text-white font-medium px-6 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition-all duration-300">
+                <Download className="h-4 w-4" />
+                How to Download
+              </Button>
+            </div>
             {/* Row 1 */}
             <div className="flex flex-wrap gap-3 justify-center mb-3">
               {[
-                { name: 'TRENDING', link: '/category/trending' },
                 { name: 'HOLLYWOOD', link: '/category/hollywood' },
                 { name: 'BOLLYWOOD', link: '/category/bollywood' },
                 { name: 'SOUTH INDIAN', link: '/category/south-indian' },
+                { name: 'HORROR', link: '/category/horror' },
                 { name: 'ANIME', link: '/category/anime' },
+                { name: 'TRENDING', link: '/category/trending' },
                 { name: 'WEB SERIES', link: '/category/web-series' },
                 { name: 'K-DRAMA', link: '/category/k-drama' }
               ].map((category) => (
@@ -252,7 +264,7 @@ const CategoryPage = ({ categoryName, movies: propMovies, description }: Categor
             <div className="flex flex-wrap gap-3 justify-center">
               {[
                 { name: 'NETFLIX', link: '/category/netflix' },
-                { name: 'AMZN Prime Video', link: '/category/amazon-prime' },
+                { name: 'AMZN Prime', link: '/category/amazon-prime' },
                 { name: 'DISNEY', link: '/category/disney' },
                 { name: 'JIOHOTSTAR', link: '/category/jiohotstar' }
               ].map((category) => (

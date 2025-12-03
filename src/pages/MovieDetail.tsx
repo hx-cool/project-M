@@ -172,28 +172,50 @@ const MovieDetail = () => {
           </div>
 
           <div className="hidden md:block max-w-6xl mx-auto mt-2">
-            {/* Row 1 */}
-            <div className="flex flex-wrap gap-4 justify-center mb-4">
-              <a href="/category/netflix" className="px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Netflix</a>
-              <a href="/category/amazon-prime" className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Amazon Prime</a>
-              <a href="/category/disney" className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Disney</a>
-              <a href="/category/jiohotstar" className="px-6 py-2.5 bg-gradient-to-r from-blue-700 to-indigo-700 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block">Jiohotstar</a>
+            {/* Buttons */}
+            <div className="flex justify-center gap-3 mb-4">
+              <Button className="bg-[#0088cc] hover:bg-[#0077b3] text-white font-medium px-6 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition-all duration-300">
+                <Send className="h-4 w-4" />
+                Join Telegram
+              </Button>
+              <Button className="bg-[#df9917] hover:bg-[#c88815] text-white font-medium px-6 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition-all duration-300">
+                <Download className="h-4 w-4" />
+                How to Download
+              </Button>
             </div>
-            {/* Row 2 */}
-            <div className="flex flex-wrap gap-4 justify-center">
+            {/* Row 1 */}
+            <div className="flex flex-wrap gap-3 justify-center mb-3">
               {[
-                { name: 'Trending', link: '/category/trending' },
-                { name: 'Hollywood', link: '/category/hollywood' },
-                { name: 'Bollywood', link: '/category/bollywood' },
-                { name: 'South Indian', link: '/category/south-indian' },
-                { name: 'Web Series', link: '/category/web-series' },
-                { name: 'Anime', link: '/category/anime' },
-                { name: 'K-Drama', link: '/category/k-drama' }
+                { name: 'HOLLYWOOD', link: '/category/hollywood' },
+                { name: 'BOLLYWOOD', link: '/category/bollywood' },
+                { name: 'SOUTH INDIAN', link: '/category/south-indian' },
+                { name: 'HORROR', link: '/category/horror' },
+                { name: 'ANIME', link: '/category/anime' },
+                { name: 'TRENDING', link: '/category/trending' },
+                { name: 'WEB SERIES', link: '/category/web-series' },
+                { name: 'K-DRAMA', link: '/category/k-drama' }
               ].map((category) => (
                 <a
                   key={category.name}
                   href={category.link}
-                  className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-red-600 text-white text-sm font-bold rounded-lg border-2 border-white/30 hover:scale-105 transition-all duration-200 inline-block"
+                  className="px-5 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-xs font-bold uppercase rounded-xl hover:scale-x-105 hover:shadow-[0_8px_20px_rgba(255,20,147,0.5)] transition-all duration-300 inline-block whitespace-nowrap"
+                >
+                  {category.name}
+                </a>
+              ))}
+            </div>
+            {/* Row 2 */}
+            <div className="flex flex-wrap gap-3 justify-center">
+              {[
+                { name: 'NETFLIX', link: '/category/netflix' },
+                { name: 'AMZN Prime', link: '/category/amazon-prime' },
+                { name: 'DISNEY', link: '/category/disney' },
+                { name: 'JIOHOTSTAR', link: '/category/jiohotstar' }
+              ].map((category) => (
+                <a
+                  key={category.name}
+                  href={category.link}
+                  className="px-5 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-xs font-bold uppercase rounded-xl hover:scale-x-105 hover:shadow-[0_8px_20px_rgba(255,20,147,0.5)] transition-all duration-300 inline-block whitespace-nowrap"
                 >
                   {category.name}
                 </a>

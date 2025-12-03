@@ -1,14 +1,13 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../src/lib/db.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Add movie
 router.post('/', async (req, res) => {
   try {
     console.log('Received movie data:', req.body);
-    const { title, year, genre, rating, posterUrl, quality, customQuality, duration, synopsis, cast, language, customLanguage, subtitle, customSubtitle, audioType, customAudioType, releaseDate, movieOrigin, platform, isSeries, episodeInfo, codec, show4K, isEditorPick, screenshots, download360p, size360p, qualityDetail360p, download480p, size480pCustom, qualityDetail480p, download720p10bit, size720p10bit, qualityDetail720p10bit, download720p, size720pCustom, qualityDetail720p, download1080p, size1080pCustom, qualityDetail1080p, download1440p, size1440p, qualityDetail1440p, download2160p, size2160p, qualityDetail2160p, customDownloads, allDownloads } = req.body;
+    const { title, year, genre, rating, posterUrl, quality, customQuality, duration, synopsis, cast, language, customLanguage, subtitle, customSubtitle, audioType, customAudioType, releaseDate, movieOrigin, platform, isSeries, episodeInfo, seasonNumber, seriesId, episodesThisSeason, codec, show4K, isEditorPick, screenshots, download360p, size360p, qualityDetail360p, download480p, size480pCustom, qualityDetail480p, download720p10bit, size720p10bit, qualityDetail720p10bit, download720p, size720pCustom, qualityDetail720p, download1080p, size1080pCustom, qualityDetail1080p, download1440p, size1440p, qualityDetail1440p, download2160p, size2160p, qualityDetail2160p, customDownloads, allDownloads } = req.body;
 
     if (!title) {
       return res.status(400).json({ success: false, error: 'Title is required' });
@@ -54,6 +53,9 @@ router.post('/', async (req, res) => {
         platform: platform || null,
         isSeries: Boolean(isSeries),
         episodeInfo: episodeInfo || null,
+        seasonNumber: seasonNumber ? parseInt(seasonNumber) : null,
+        seriesId: seriesId || null,
+        episodesThisSeason: episodesThisSeason ? parseInt(episodesThisSeason) : null,
         codec: codec || null,
         show4K: Boolean(show4K),
         isEditorPick: Boolean(isEditorPick),

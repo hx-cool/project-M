@@ -272,7 +272,11 @@ const Index = () => {
                 { name: 'HOLLYWOOD', link: '/category/hollywood' },
                 { name: 'BOLLYWOOD', link: '/category/bollywood' },
                 { name: 'SOUTH INDIAN', link: '/category/south-indian' },
-                { name: 'HORROR', link: '/category/horror' }
+                { name: 'HORROR', link: '/category/horror' },
+                { name: 'ANIME', link: '/category/anime' },
+                { name: 'TRENDING', link: '/category/trending' },
+                { name: 'WEB SERIES', link: '/category/web-series' },
+                { name: 'K-DRAMA', link: '/category/k-drama' }
               ].map((category) => (
                 <a
                   key={category.name}
@@ -284,29 +288,12 @@ const Index = () => {
               ))}
             </div>
             {/* Row 2 */}
-            <div className="flex flex-wrap gap-3 justify-center mb-3">
+            <div className="flex flex-wrap gap-3 justify-center">
               {[
                 { name: 'NETFLIX', link: '/category/netflix' },
                 { name: 'AMZN Prime', link: '/category/amazon-prime' },
                 { name: 'DISNEY', link: '/category/disney' },
                 { name: 'JIOHOTSTAR', link: '/category/jiohotstar' }
-              ].map((category) => (
-                <a
-                  key={category.name}
-                  href={category.link}
-                  className="px-5 py-2.5 bg-gradient-to-r from-pink to-purple-600 text-white text-xs font-bold uppercase rounded-xl hover:scale-x-105 hover:shadow-[0_8px_20px_rgba(255,20,147,0.5)] transition-all duration-300 inline-block whitespace-nowrap"
-                >
-                  {category.name}
-                </a>
-              ))}
-            </div>
-            {/* Row 3 */}
-            <div className="flex flex-wrap gap-3 justify-center">
-              {[
-                { name: 'ANIME', link: '/category/anime' },
-                { name: 'TRENDING', link: '/category/trending' },
-                { name: 'WEB SERIES', link: '/category/web-series' },
-                { name: 'K-DRAMA', link: '/category/k-drama' }
               ].map((category) => (
                 <a
                   key={category.name}
