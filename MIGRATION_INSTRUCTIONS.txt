@@ -1,0 +1,40 @@
+DATABASE MIGRATION - QUICK STEPS
+=================================
+
+STEP 1: Run the Migration
+--------------------------
+Double-click the file: run-migration.bat
+
+This will:
+- Push the new schema to your database
+- Generate the updated Prisma client
+
+STEP 2: Restart Backend Server
+-------------------------------
+1. Stop your current backend server (Ctrl+C in the terminal)
+2. Restart it with: node server.js
+
+STEP 3: Verify
+--------------
+- Open Admin Panel
+- Try adding a new movie
+- Check if new fields appear
+
+NEW FIELDS ADDED:
+-----------------
+✓ contentType (movie/series/anime/documentary)
+✓ trending (true/false)
+✓ featured (true/false)
+✓ metaTitle (SEO)
+✓ metaDescription (SEO)
+✓ keywords (SEO)
+
+TROUBLESHOOTING:
+----------------
+If run-migration.bat doesn't work:
+1. Open Command Prompt in MoviesWala folder
+2. Run: npx prisma db push
+3. Run: npx prisma generate
+4. Restart backend server
+
+That's it! Your database is now updated.

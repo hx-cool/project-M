@@ -43,7 +43,23 @@ router.get('/movies', async (req, res) => {
 router.put('/movies/:id', async (req, res) => {
   try {
     const movieId = parseInt(req.params.id);
-    const { title, year, genre, rating, posterUrl, quality, customQuality, duration, synopsis, cast, language, customLanguage, subtitle, customSubtitle, audioType, customAudioType, releaseDate, movieOrigin, platform, isSeries, episodeInfo, seasonNumber, seriesId, episodesThisSeason, codec, show4K, isEditorPick, screenshots, download360p, size360p, qualityDetail360p, download480p, size480pCustom, qualityDetail480p, download720p10bit, size720p10bit, qualityDetail720p10bit, download720p, size720pCustom, qualityDetail720p, download1080p, size1080pCustom, qualityDetail1080p, download1440p, size1440p, qualityDetail1440p, download2160p, size2160p, qualityDetail2160p, customDownloads, allDownloads } = req.body;
+    const { title, year, genre, rating, posterUrl, quality, customQuality, duration, synopsis, cast, language, customLanguage, subtitle, customSubtitle, audioType, customAudioType, releaseDate, movieOrigin, platform, isSeries, episodeInfo, seasonNumber, seriesId, episodesThisSeason, totalSeasons, seriesStatus, seriesType, codec, show4K, isEditorPick, screenshots, download360p, size360p, qualityDetail360p, download480p, size480pCustom, qualityDetail480p, download720p10bit, size720p10bit, qualityDetail720p10bit, download720p, size720pCustom, qualityDetail720p, download1080p10bit, size1080p10bit, qualityDetail1080p10bit, download1080p, size1080pCustom, qualityDetail1080p, download1080p60fps, size1080p60fps, qualityDetail1080p60fps, download1440p, size1440p, qualityDetail1440p, download2160p, size2160p, qualityDetail2160p, download2160p10bit, size2160p10bit, qualityDetail2160p10bit, customDownloads, allDownloads } = req.body;
+
+    // Quick toggle for trending/featured only
+    if (req.body.trending !== undefined && Object.keys(req.body).length === 1) {
+      const movie = await prisma.movie.update({
+        where: { id: movieId },
+        data: { trending: Boolean(req.body.trending) },
+      });
+      return res.json({ success: true, movie });
+    }
+    if (req.body.featured !== undefined && Object.keys(req.body).length === 1) {
+      const movie = await prisma.movie.update({
+        where: { id: movieId },
+        data: { featured: Boolean(req.body.featured) },
+      });
+      return res.json({ success: true, movie });
+    }
 
     const movie = await prisma.movie.update({
       where: { id: movieId },
@@ -70,9 +86,14 @@ router.put('/movies/:id', async (req, res) => {
         seasonNumber: seasonNumber ? parseInt(seasonNumber) : null,
         seriesId: seriesId || null,
         episodesThisSeason: episodesThisSeason ? parseInt(episodesThisSeason) : null,
+        totalSeasons: totalSeasons ? parseInt(totalSeasons) : null,
+        seriesStatus: seriesStatus || null,
+        seriesType: seriesType || null,
         codec: codec || null,
         show4K: Boolean(show4K),
         isEditorPick: Boolean(isEditorPick),
+        trending: Boolean(req.body.trending),
+        featured: Boolean(req.body.featured),
       },
     });
 
@@ -109,14 +130,16 @@ router.put('/movies/:id', async (req, res) => {
     // Use allDownloads if provided (new unified system), otherwise fall back to old system
     if (allDownloads && Array.isArray(allDownloads)) {
       for (const dl of allDownloads) {
-        if (dl.link) {
+        if (dl.link || dl.batchLink) {
           await prisma.download.create({ 
             data: { 
               movieId, 
               resolution: dl.name, 
               size: dl.size, 
               qualityDetail: dl.qualityDetail, 
-              link: dl.link, 
+              link: dl.link || null, 
+              batchLink: dl.batchLink || null,
+              batchSize: dl.batchSize || null,
               order: dl.order 
             } 
           });
@@ -147,7 +170,8 @@ router.put('/movies/:id', async (req, res) => {
 
     res.json({ success: true, movie });
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Failed to update movie' });
+    console.error('Update movie error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Failed to update movie' });
   }
 });
 
@@ -157,7 +181,8 @@ router.delete('/movies/:id', async (req, res) => {
     await prisma.movie.delete({ where: { id: parseInt(req.params.id) } });
     res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete movie' });
+    console.error('Delete movie error:', error);
+    res.status(500).json({ error: error.message || 'Failed to delete movie' });
   }
 });
 
@@ -183,6 +208,65 @@ router.get('/stats', async (req, res) => {
     res.json({ movieCount, genreCount, totalDownloads, monthlyMovies, recentMovies });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
+// Bulk toggle trending status
+router.post('/movies/bulk-trending', async (req, res) => {
+  try {
+    const { movieIds, trending } = req.body;
+    await prisma.movie.updateMany({
+      where: { id: { in: movieIds } },
+      data: { trending: Boolean(trending) }
+    });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update trending status' });
+  }
+});
+
+// Bulk toggle featured/popular status
+router.post('/movies/bulk-featured', async (req, res) => {
+  try {
+    const { movieIds, featured } = req.body;
+    await prisma.movie.updateMany({
+      where: { id: { in: movieIds } },
+      data: { featured: Boolean(featured) }
+    });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update featured status' });
+  }
+});
+
+// Search movies for management
+router.get('/movies/search', async (req, res) => {
+  try {
+    const { q } = req.query;
+    const movies = await prisma.movie.findMany({
+      where: q ? {
+        OR: [
+          { title: { contains: q as string, mode: 'insensitive' } },
+          { year: { contains: q as string } }
+        ]
+      } : {},
+      select: {
+        id: true,
+        title: true,
+        year: true,
+        posterUrl: true,
+        trending: true,
+        featured: true,
+        isSeries: true,
+        rating: true,
+        views: true
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    });
+    res.json(movies);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to search movies' });
   }
 });
 

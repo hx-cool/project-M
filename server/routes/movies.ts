@@ -7,7 +7,7 @@ const router = Router();
 router.post('/', async (req, res) => {
   try {
     console.log('Received movie data:', req.body);
-    const { title, year, genre, rating, posterUrl, quality, customQuality, duration, synopsis, cast, language, customLanguage, subtitle, customSubtitle, audioType, customAudioType, releaseDate, movieOrigin, platform, isSeries, episodeInfo, seasonNumber, seriesId, episodesThisSeason, codec, show4K, isEditorPick, screenshots, download360p, size360p, qualityDetail360p, download480p, size480pCustom, qualityDetail480p, download720p10bit, size720p10bit, qualityDetail720p10bit, download720p, size720pCustom, qualityDetail720p, download1080p, size1080pCustom, qualityDetail1080p, download1440p, size1440p, qualityDetail1440p, download2160p, size2160p, qualityDetail2160p, customDownloads, allDownloads } = req.body;
+    const { title, year, genre, rating, posterUrl, quality, customQuality, duration, synopsis, cast, language, customLanguage, subtitle, customSubtitle, audioType, customAudioType, releaseDate, movieOrigin, platform, isSeries, episodeInfo, seasonNumber, seriesId, episodesThisSeason, totalSeasons, seriesStatus, seriesType, codec, show4K, isEditorPick, screenshots, download360p, size360p, qualityDetail360p, download480p, size480pCustom, qualityDetail480p, download720p10bit, size720p10bit, qualityDetail720p10bit, download720p, size720pCustom, qualityDetail720p, download1080p, size1080pCustom, qualityDetail1080p, download1440p, size1440p, qualityDetail1440p, download2160p, size2160p, qualityDetail2160p, customDownloads, allDownloads } = req.body;
 
     if (!title) {
       return res.status(400).json({ success: false, error: 'Title is required' });
@@ -56,12 +56,41 @@ router.post('/', async (req, res) => {
         seasonNumber: seasonNumber ? parseInt(seasonNumber) : null,
         seriesId: seriesId || null,
         episodesThisSeason: episodesThisSeason ? parseInt(episodesThisSeason) : null,
+        totalSeasons: totalSeasons ? parseInt(totalSeasons) : null,
+        seriesStatus: seriesStatus || null,
+        seriesType: seriesType || null,
         codec: codec || null,
         show4K: Boolean(show4K),
         isEditorPick: Boolean(isEditorPick),
+        trending: Boolean(req.body.trending),
+        featured: Boolean(req.body.featured),
+        views: 0,
       },
     });
     console.log('Movie created successfully:', movie.id);
+
+    // Auto-assign categories
+    const categoriesToAdd: string[] = [];
+    if (movieOrigin) categoriesToAdd.push(movieOrigin);
+    if (platform && platform !== 'none') categoriesToAdd.push(platform);
+    if (isSeries) {
+      if (seriesType === 'Web Series') categoriesToAdd.push('Web Series');
+      else if (seriesType === 'TV Show') categoriesToAdd.push('TV Show');
+      else if (seriesType) categoriesToAdd.push(seriesType);
+    } else {
+      categoriesToAdd.push('Movies');
+    }
+
+    for (const categoryName of categoriesToAdd) {
+      const catSlug = categoryName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      let category = await prisma.category.findUnique({ where: { slug: catSlug } });
+      if (!category) {
+        category = await prisma.category.create({ data: { name: categoryName, slug: catSlug } });
+      }
+      await prisma.movieCategory.create({
+        data: { movieId: movie.id, categoryId: category.id },
+      });
+    }
 
     // Add genres
     if (genre) {
@@ -106,34 +135,32 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // Add download links - use allDownloads if provided (new unified system)
+    // Add download links
     if (allDownloads && Array.isArray(allDownloads)) {
       for (const dl of allDownloads) {
-        if (dl.link) {
+        if (dl.link || dl.batchLink) {
           await prisma.download.create({
             data: { 
               movieId: movie.id, 
               resolution: dl.name, 
               size: dl.size, 
               qualityDetail: dl.qualityDetail, 
-              link: dl.link, 
+              link: dl.link || null, 
+              batchLink: dl.batchLink || null,
+              batchSize: dl.batchSize || null,
               order: dl.order 
             },
           });
         }
       }
     } else {
-      // Fallback to old system
       const downloads = [
         { link: download480p, resolution: '480p', size: size480pCustom, qualityDetail: qualityDetail480p, order: 0 },
         { link: download720p10bit, resolution: '720p 10Bit', size: size720p10bit, qualityDetail: qualityDetail720p10bit, order: 1 },
         { link: download720p, resolution: '720p', size: size720pCustom, qualityDetail: qualityDetail720p, order: 2 },
-        { link: download1080p10bit, resolution: '1080p 10Bit', size: size1080p10bit, qualityDetail: qualityDetail1080p10bit, order: 3 },
         { link: download1080p, resolution: '1080p', size: size1080pCustom, qualityDetail: qualityDetail1080p, order: 4 },
-        { link: download1080p60fps, resolution: '1080p 60FPS', size: size1080p60fps, qualityDetail: qualityDetail1080p60fps, order: 5 },
         { link: download1440p, resolution: '1440p', size: size1440p, qualityDetail: qualityDetail1440p, order: 6 },
         { link: download2160p, resolution: '2160p', size: size2160p, qualityDetail: qualityDetail2160p, order: 7 },
-        { link: download2160p10bit, resolution: '2160p 10Bit', size: size2160p10bit, qualityDetail: qualityDetail2160p10bit, order: 8 },
       ];
 
       for (const dl of downloads) {
@@ -144,7 +171,6 @@ router.post('/', async (req, res) => {
         }
       }
 
-      // Add custom downloads
       if (customDownloads && Array.isArray(customDownloads)) {
         for (const custom of customDownloads) {
           if (custom.link) {
@@ -163,18 +189,35 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Get all movies
+// Get all movies with pagination
 router.get('/', async (req, res) => {
   try {
-    const movies = await prisma.movie.findMany({
-      include: {
-        genres: { include: { genre: true } },
-        cast: { include: { cast: true } },
-        downloads: { orderBy: { order: 'asc' } },
-        screenshots: { orderBy: { displayOrder: 'asc' } },
-      },
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
+    const [movies, total] = await Promise.all([
+      prisma.movie.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          genres: { include: { genre: true } },
+          downloads: { orderBy: { order: 'asc' }, take: 3 },
+        },
+      }),
+      prisma.movie.count()
+    ]);
+
+    res.json({
+      movies,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
     });
-    res.json(movies);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch movies' });
   }
@@ -183,7 +226,7 @@ router.get('/', async (req, res) => {
 // Search movies
 router.get('/search', async (req, res) => {
   try {
-    const { q, genre, year } = req.query;
+    const { q, genre, year, category } = req.query;
     
     const where: any = {};
     
@@ -203,11 +246,16 @@ router.get('/search', async (req, res) => {
       where.year = year;
     }
 
+    if (category && typeof category === 'string') {
+      where.categories = { some: { category: { slug: { equals: category, mode: 'insensitive' } } } };
+    }
+
     const movies = await prisma.movie.findMany({
       where,
       include: {
         genres: { include: { genre: true } },
         cast: { include: { cast: true } },
+        categories: { include: { category: true } },
         downloads: { orderBy: { order: 'asc' } },
         screenshots: { orderBy: { displayOrder: 'asc' } },
       },
@@ -221,7 +269,7 @@ router.get('/search', async (req, res) => {
   }
 });
 
-// Get ranked movies for homepage (5 rows × 5 cards = 25 movies)
+// Get ranked movies for homepage
 router.get('/ranked', async (req, res) => {
   try {
     const movies = await prisma.movie.findMany({
@@ -232,14 +280,7 @@ router.get('/ranked', async (req, res) => {
     });
 
     const now = new Date();
-    const ninety_days_ago = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-
     const max_views = Math.max(...movies.map(m => m.views), 1);
-
-    const qualityMap: Record<string, number> = {
-      'BluRay': 1.0, 'WEB-DL': 0.9, 'HDRip': 0.7,
-      'PreDVDRip': 0.5, 'HDTC': 0.4, 'TELESYNC': 0.3, 'CAM': 0.2
-    };
 
     const scored = movies.map(m => {
       const age_days = Math.floor((now.getTime() - new Date(m.createdAt).getTime()) / (24 * 60 * 60 * 1000));
@@ -248,18 +289,11 @@ router.get('/ranked', async (req, res) => {
       const rating_score = (m.rating || 0) / 10;
       const editorial_score = m.isEditorPick ? 1 : 0;
       
-      const score = 0.45 * recency_score + 0.25 * popularity_score + 
-                    0.12 * rating_score + 0.18 * editorial_score;
-
+      const score = 0.45 * recency_score + 0.25 * popularity_score + 0.12 * rating_score + 0.18 * editorial_score;
       return { ...m, score };
     });
 
-    scored.sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      if (b.createdAt !== a.createdAt) return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      if (b.views !== a.views) return b.views - a.views;
-      return a.id - b.id;
-    });
+    scored.sort((a, b) => b.score - a.score || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     const hollywood = scored.filter(m => m.movieOrigin === 'Hollywood');
     const indian = scored.filter(m => ['Bollywood', 'South Indian'].includes(m.movieOrigin || ''));
@@ -272,29 +306,14 @@ router.get('/ranked', async (req, res) => {
 
     for (const m of scored) {
       if (result.length >= 25) break;
-      if (selected.has(m.id)) continue;
-      
-      const hollywoodCount = result.filter(r => r.movieOrigin === 'Hollywood').length;
-      const indianCount = result.filter(r => ['Bollywood', 'South Indian'].includes(r.movieOrigin || '')).length;
-      
-      if (m.movieOrigin === 'Hollywood' && hollywoodCount >= 15) continue;
-      if (['Bollywood', 'South Indian'].includes(m.movieOrigin || '') && indianCount >= 15) continue;
-      
-      selected.add(m.id);
-      result.push(m);
+      if (!selected.has(m.id)) { selected.add(m.id); result.push(m); }
     }
 
     const row1 = result.slice(0, 5);
-    const remaining = result.slice(5);
-    const row2_pool = remaining.filter(m => m.movieOrigin === 'Hollywood');
-    const row3_pool = remaining.filter(m => ['Bollywood', 'South Indian'].includes(m.movieOrigin || ''));
-    
-    const row2 = row2_pool.slice(0, 5);
-    const row3 = row3_pool.slice(0, 5);
-    
-    const used_in_rows = new Set([...row1, ...row2, ...row3].map(m => m.id));
-    const row4 = remaining.filter(m => !used_in_rows.has(m.id)).slice(0, 5);
-    const row5 = remaining.filter(m => !used_in_rows.has(m.id) && !row4.map(r => r.id).includes(m.id)).slice(0, 5);
+    const row2 = result.slice(5, 10);
+    const row3 = result.slice(10, 15);
+    const row4 = result.slice(15, 20);
+    const row5 = result.slice(20, 25);
 
     res.json({ row1, row2, row3, row4, row5 });
   } catch (error) {
@@ -315,6 +334,112 @@ router.post('/:slug/view', async (req, res) => {
   }
 });
 
+// Get trending movies
+router.get('/trending', async (req, res) => {
+  try {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const movies = await prisma.movie.findMany({
+      where: {
+        OR: [
+          { trending: true },
+          { createdAt: { gte: sevenDaysAgo } }
+        ]
+      },
+      include: {
+        genres: { include: { genre: true } },
+        downloads: { orderBy: { order: 'asc' } }
+      },
+      orderBy: [
+        { trending: 'desc' },
+        { createdAt: 'desc' }
+      ],
+      take: 20
+    });
+    res.json(movies);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch trending movies' });
+  }
+});
+
+// Get top rated movies
+router.get('/top-rated', async (req, res) => {
+  try {
+    const movies = await prisma.movie.findMany({
+      where: {
+        OR: [
+          { rating: { gte: 7.5 } },
+          { featured: true }
+        ]
+      },
+      include: {
+        genres: { include: { genre: true } },
+        downloads: { orderBy: { order: 'asc' } }
+      },
+      orderBy: [
+        { featured: 'desc' },
+        { rating: 'desc' }
+      ],
+      take: 20
+    });
+    res.json(movies);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch top rated movies' });
+  }
+});
+
+// Get popular movies
+router.get('/popular', async (req, res) => {
+  try {
+    const movies = await prisma.movie.findMany({
+      where: {
+        OR: [
+          { views: { gte: 1000 } },
+          { featured: true }
+        ]
+      },
+      include: {
+        genres: { include: { genre: true } },
+        downloads: { orderBy: { order: 'asc' } }
+      },
+      orderBy: [
+        { featured: 'desc' },
+        { views: 'desc' },
+        { rating: 'desc' }
+      ],
+      take: 20
+    });
+    res.json(movies);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch popular movies' });
+  }
+});
+
+// Get recent updates (5 latest movies/series)
+router.get('/recent/updates', async (req, res) => {
+  try {
+    const movies = await prisma.movie.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: {
+        slug: true,
+        title: true,
+        year: true,
+        quality: true,
+        customQuality: true,
+        language: true,
+        customLanguage: true,
+        downloads: {
+          orderBy: { order: 'asc' },
+          select: { resolution: true, size: true }
+        }
+      }
+    });
+    res.json(movies);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch recent updates' });
+  }
+});
+
 // Get single movie by slug
 router.get('/:slug', async (req, res) => {
   try {
@@ -323,6 +448,7 @@ router.get('/:slug', async (req, res) => {
       include: {
         genres: { include: { genre: true } },
         cast: { include: { cast: true } },
+        categories: { include: { category: true } },
         downloads: { orderBy: { order: 'asc' } },
         screenshots: { orderBy: { displayOrder: 'asc' } },
       },

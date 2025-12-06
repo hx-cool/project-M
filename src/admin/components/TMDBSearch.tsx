@@ -19,8 +19,15 @@ export const TMDBSearch = ({ onSelect }: TMDBSearchProps) => {
   const handleSearch = async () => {
     if (!query.trim()) return;
     setLoading(true);
-    const movies = await searchTMDB(query);
-    setResults(movies.slice(0, 5));
+    try {
+      console.log('Searching TMDB for:', query);
+      const movies = await searchTMDB(query);
+      console.log('TMDB search results:', movies);
+      setResults(movies.slice(0, 5));
+    } catch (error) {
+      console.error('TMDB search error:', error);
+      alert('TMDB search failed. Check console for details.');
+    }
     setLoading(false);
   };
 
@@ -65,7 +72,33 @@ export const TMDBSearch = ({ onSelect }: TMDBSearchProps) => {
           className="bg-gray-800 text-white border-gray-600"
         />
         <Button onClick={handleSearch} disabled={loading} className="bg-pink-600 hover:bg-pink-700">
-          <Search className="w-4 h-4" />
+          {loading ? 'Searching...' : <Search className="w-4 h-4" />}
+        </Button>
+        <Button 
+          onClick={() => {
+            console.log('Testing TMDB API...');
+            fetch('https://api.themoviedb.org/3/search/multi?api_key=1cf50e6248dc270629e802686245c2c8&query=avengers')
+              .then(r => {
+                console.log('Response status:', r.status, r.statusText);
+                return r.json();
+              })
+              .then(d => {
+                console.log('Direct API test success:', d);
+                if (d.results && d.results.length > 0) {
+                  alert(`API works! Found ${d.results.length} results for Avengers`);
+                } else {
+                  alert('API works but no results found');
+                }
+              })
+              .catch(e => {
+                console.error('Direct API test failed:', e);
+                alert('API test failed: ' + e.message);
+              });
+          }}
+          variant="outline"
+          className="text-xs px-2"
+        >
+          Test API
         </Button>
       </div>
       

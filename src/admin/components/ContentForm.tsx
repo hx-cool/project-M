@@ -5,11 +5,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Send, ArrowLeft } from "lucide-react";
-import { TMDBSearch } from "@/admin/components/TMDBSearch";
+import { TMDBSearch } from "./TMDBSearch";
 import { API_URL } from "@/config/api";
 
-const Admin = () => {
+interface ContentFormProps {
+  editMovieId?: number;
+  onSuccess?: () => void;
+}
+
+const ContentForm: React.FC<ContentFormProps> = ({ editMovieId: propEditMovieId, onSuccess }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editMovieId, setEditMovieId] = useState<number | null>(null);
   const [formHeight, setFormHeight] = useState(0);
@@ -71,14 +75,12 @@ const Admin = () => {
 
   useEffect(() => {
     // Check if we're in edit mode
-    const movieId = localStorage.getItem('editMovieId');
-    if (movieId) {
+    if (propEditMovieId) {
       setIsEditMode(true);
-      setEditMovieId(parseInt(movieId));
-      loadMovieForEdit(parseInt(movieId));
-      localStorage.removeItem('editMovieId');
+      setEditMovieId(propEditMovieId);
+      loadMovieForEdit(propEditMovieId);
     }
-  }, []);
+  }, [propEditMovieId]);
 
   useEffect(() => {
     const updateHeight = () => {
@@ -272,13 +274,7 @@ const Admin = () => {
       
       if (data.success) {
         alert(isEditMode ? 'Movie updated successfully!' : 'Movie added successfully!');
-        if (isEditMode) {
-          window.location.href = '/admin-panel?tab=manage-content';
-        } else {
-          // Redirect to admin-panel to see the new movie
-          window.location.href = '/admin-panel?tab=manage-content';
-          return;
-        }
+        onSuccess?.();
         if (false) { // This block won't execute now
           // Reset form for new movie
           setFormData({
@@ -340,23 +336,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-20 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Button 
-            onClick={() => window.location.href = '/admin-panel?tab=manage-content'} 
-            variant="outline" 
-            className="border-gray-600 text-white hover:bg-gray-700"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Content Management
-          </Button>
-          <h1 className="text-4xl font-bold text-white">
-            Admin Panel - {isEditMode ? (formData.isSeries ? 'Edit Series' : 'Edit Movie') : (formData.isSeries ? 'Add Series' : 'Add Movie')}
-          </h1>
-        </div>
-        
-        <div className="grid lg:grid-cols-2 gap-8">
+    <div className="grid lg:grid-cols-2 gap-8">
           {/* Form */}
           <Card className="lg:col-span-1 bg-gray-900 border-gray-800 admin-form-card">
             <CardHeader>
@@ -1017,7 +997,7 @@ const Admin = () => {
                     {isEditMode ? 'Update Movie' : 'Add Movie'}
                   </Button>
                   {isEditMode && (
-                    <Button type="button" onClick={() => window.location.href = '/admin-panel?tab=manage-content'} variant="outline" className="border-gray-600 text-white hover:bg-gray-800">
+                    <Button type="button" onClick={onSuccess} variant="outline" className="border-gray-600 text-white hover:bg-gray-800">
                       Cancel
                     </Button>
                   )}
@@ -1181,9 +1161,7 @@ const Admin = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
   );
 };
 
-export default Admin;
+export default ContentForm;

@@ -15,15 +15,15 @@ const navLinks = [
     href: "/featured",
     dropdown: [
    { name: "Trending", href: "/featured/trending" },
-{ name: "Popular", href: "/featured/popular" },
+   { name: "Netflix", href: "/platform/netflix" },
+ 
 { name: "Top Rated", href: "/featured/top-rated" },
-{ name: "New Release", href: "/featured/new-release" },
-{ name: "Upcoming", href: "/featured/upcoming" },
+  { name: "Amazon Prime ", href: "/platform/prime" },
 
-// Essential Platform Highlights
-{ name: "Netflix", href: "/platform/netflix" },
-{ name: "Amazon Prime ", href: "/platform/prime" },
+{ name: "Popular", href: "/featured/popular" },
 { name: "Disney+ ", href: "/platform/disney+" },
+
+{ name: "Upcoming", href: "/featured/upcoming" },
 { name: "Jiohotstar", href: "/platform/jiocinema" },
     ]
   },
@@ -105,6 +105,8 @@ export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [localSearchQuery, setLocalSearchQuery] = useState("");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [mobileOpenDropdown, setMobileOpenDropdown] = useState<string | null>(null);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   const { theme, setTheme } = useTheme();
   const { searchQuery, setSearchQuery, clearSearch } = useSearch();
@@ -112,8 +114,7 @@ export const Header = () => {
 
   const handleSearch = () => {
     if (localSearchQuery.trim()) {
-      setSearchQuery(localSearchQuery.trim());
-      navigate('/');
+      navigate(`/search?s=${localSearchQuery.trim().replace(/\s+/g, '+')}`);
     }
   };
 
@@ -136,7 +137,6 @@ export const Header = () => {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
-      setIsMobileMenuOpen(false);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -176,14 +176,16 @@ export const Header = () => {
           </button>
 
           {/* Premium Logo */}
-          <a href="/" className="flex-shrink-0 flex items-center gap-3 md:flex-shrink-0 absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0">
-            <div className="relative">
-              <Film className="h-8 w-8 text-luxury animate-spin" style={{ animationDuration: '8s' }} />
-              <div className="absolute inset-0 bg-luxury/30 rounded-full blur-md animate-pulse" />
+          <a href="/" className="flex-shrink-0 flex items-center gap-2 md:flex-shrink-0 absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0">
+            <div className="relative flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-pink via-magenta to-red-600 rounded-lg shadow-lg">
+              <Film className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-pink via-magenta to-luxury bg-clip-text text-transparent">
-              Movies<span className="text-pink">Wala</span>
-            </h1>
+            <div className="flex flex-col leading-none">
+              <h1 className="text-xl md:text-2xl font-black tracking-tight">
+                <span className="bg-gradient-to-r from-pink via-magenta to-red-500 bg-clip-text text-transparent">Movies</span><span className="text-white">Wala</span>
+              </h1>
+              <span className="text-[8px] md:text-[9px] text-gray-400 font-medium tracking-wider uppercase">Download Hub</span>
+            </div>
           </a>
 
           {/* Centered Navigation - Desktop */}
@@ -217,21 +219,23 @@ export const Header = () => {
                 
                 {link.dropdown && openDropdown === link.name && (
                   <div 
-                    className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-[10000]"
+                    className="absolute top-full left-0 pt-2 z-[10000]"
                     onMouseEnter={() => setOpenDropdown(link.name)}
                     onMouseLeave={() => setOpenDropdown(null)}
                   >
-                    <div className="w-48 bg-black border border-pink/30 rounded shadow-2xl py-2">
-                      {link.dropdown.map((item) => (
-                        <a
-                          key={item.name}
-                          href={item.href}
-                          className="block px-4 py-2.5 text-sm text-white hover:text-pink hover:bg-pink/20 transition-colors"
-                          onClick={() => setOpenDropdown(null)}
-                        >
-                          {item.name}
-                        </a>
-                      ))}
+                    <div className="w-96 bg-black border border-pink/30 rounded shadow-2xl py-2">
+                      <div className="grid grid-cols-2 gap-x-2">
+                        {link.dropdown.map((item) => (
+                          <a
+                            key={item.name}
+                            href={item.href}
+                            className="block px-4 py-2.5 text-sm text-white hover:text-pink hover:bg-pink/20 transition-colors"
+                            onClick={() => setOpenDropdown(null)}
+                          >
+                            {item.name}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -257,13 +261,7 @@ export const Header = () => {
             {/* Mobile Search Icon */}
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg text-foreground/80 transition-colors hover:bg-surface hover:text-pink md:hidden"
-              onClick={() => {
-                const searchInput = document.querySelector('input[placeholder*="Search movies"]') as HTMLInputElement;
-                if (searchInput) {
-                  searchInput.focus();
-                  searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-              }}
+              onClick={() => setIsMobileSearchOpen(true)}
             >
               <Search className="h-5 w-5" />
             </button>
@@ -275,13 +273,72 @@ export const Header = () => {
 
       </header>
 
-      {/* Mobile Navigation Menu - Portal */}
-      {isMobileMenuOpen && createPortal(
-        <div className="fixed inset-0 md:hidden" style={{ zIndex: 999999 }} onClick={() => setIsMobileMenuOpen(false)}>
-          <div className="fixed top-16 left-0 right-0 bg-background border-t border-foreground/5 shadow-lg max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <nav className="p-4 flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <div key={link.name}>
+      {/* Mobile Search Slider */}
+      {isMobileSearchOpen && (
+        <div className="fixed inset-0 z-[10000] md:hidden">
+          <div className="absolute inset-0 bg-black/80" onClick={() => setIsMobileSearchOpen(false)} />
+          <div className="absolute top-0 right-0 h-16 w-full bg-gradient-to-br from-[#000000] to-[#0d0d0d] px-4 shadow-2xl animate-in slide-in-from-right duration-300 flex items-center">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsMobileSearchOpen(false)}
+                className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface/50 text-white hover:bg-pink/20 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-pink z-10" />
+                <Input
+                  type="search"
+                  placeholder="Search movies, series, anime..."
+                  value={localSearchQuery}
+                  onChange={(e) => setLocalSearchQuery(e.target.value)}
+                  onKeyDown={(e) => { 
+                    if (e.key === 'Enter') { 
+                      (e.target as HTMLElement).blur(); 
+                      handleSearch(); 
+                      setIsMobileSearchOpen(false);
+                    }
+                  }}
+                  className="h-12 w-full rounded-lg bg-surface/50 backdrop-blur-sm pl-11 pr-4 border-pink/30 focus:border-pink focus:ring-2 focus:ring-pink/50 text-white"
+                  autoFocus
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-background border-t border-foreground/5 shadow-lg">
+          <nav className="p-4 flex flex-col gap-1 max-h-[60vh] overflow-y-auto">
+            {navLinks.map((link) => (
+              <div key={link.name}>
+                {link.dropdown ? (
+                  <>
+                    <button
+                      onClick={() => setMobileOpenDropdown(mobileOpenDropdown === link.name ? null : link.name)}
+                      className="w-full px-4 py-2 text-base font-medium text-foreground/80 transition-colors hover:text-pink hover:bg-surface-elevated rounded-lg flex items-center justify-between"
+                    >
+                      {link.name}
+                      <ChevronDown className={cn("h-4 w-4 transition-transform", mobileOpenDropdown === link.name && "rotate-180")} />
+                    </button>
+                    {mobileOpenDropdown === link.name && (
+                      <div className="ml-4 mt-1 flex flex-col gap-1">
+                        {link.dropdown.map((item) => (
+                          <a
+                            key={item.name}
+                            href={item.href}
+                            className="px-4 py-1.5 text-sm text-foreground/60 hover:text-pink hover:bg-surface-elevated rounded-lg"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            {item.name}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
                   <a
                     href={link.href}
                     className="px-4 py-2 text-base font-medium text-foreground/80 transition-colors hover:text-pink hover:bg-surface-elevated rounded-lg flex items-center justify-between"
@@ -289,26 +346,11 @@ export const Header = () => {
                   >
                     {link.name}
                   </a>
-                  {link.dropdown && (
-                    <div className="ml-4 mt-1 flex flex-col gap-1">
-                      {link.dropdown.map((item) => (
-                        <a
-                          key={item.name}
-                          href={item.href}
-                          className="px-4 py-1.5 text-sm text-foreground/60 hover:text-pink hover:bg-surface-elevated rounded-lg"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          {item.name}
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </nav>
-          </div>
-        </div>,
-        document.body
+                )}
+              </div>
+            ))}
+          </nav>
+        </div>
       )}
     </>
   );

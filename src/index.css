@@ -22,18 +22,18 @@ All colors MUST be HSL.
     --popover: 0 0% 8%;
     --popover-foreground: 0 0% 92%;
 
-    /* Accent Colors - Hot Pink Theme */
-    --primary: 330 100% 50%;
-    /* #ff007f hot pink */
+    /* Accent Colors - Netflix Red Theme */
+    --primary: 358 94% 49%;
+    /* #E50914 netflix red */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 92%;
 
-    --accent-pink: 330 100% 50%;
-    /* #ff007f */
-    --accent-magenta: 320 85% 60%;
-    --accent-luxury: 300 100% 60%;
+    --accent-pink: 358 94% 49%;
+    /* #E50914 */
+    --accent-magenta: 358 94% 55%;
+    --accent-luxury: 358 94% 60%;
 
     --success: 141 73% 42%;
 
@@ -47,32 +47,32 @@ All colors MUST be HSL.
     /* Borders & Inputs */
     --border: 0 0% 15%;
     --input: 0 0% 12%;
-    --ring: 330 100% 60%;
+    --ring: 358 94% 55%;
 
     --radius: 0.75rem;
 
-    /* Glows - Hot Pink */
-    --glow-pink: 0 0 24px rgba(255, 0, 127, 0.5);
-    --glow-magenta: 0 0 20px rgba(255, 0, 127, 0.3);
+    /* Glows - Netflix Red */
+    --glow-pink: 0 0 24px rgba(229, 9, 20, 0.5);
+    --glow-magenta: 0 0 20px rgba(229, 9, 20, 0.3);
     --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.6);
   }
 }
 
 @layer utilities {
   .glow-pink {
-    box-shadow: 0 0 24px rgba(255, 0, 127, 0.5);
+    box-shadow: 0 0 24px rgba(229, 9, 20, 0.5);
   }
 
   .glow-magenta {
-    box-shadow: 0 0 20px rgba(255, 0, 127, 0.3);
+    box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
   }
 
   .glow-neon {
-    box-shadow: 0 0 20px rgba(255, 0, 127, 0.6), 0 0 40px rgba(255, 0, 127, 0.3);
+    box-shadow: 0 0 20px rgba(229, 9, 20, 0.6), 0 0 40px rgba(229, 9, 20, 0.3);
   }
 
   .gradient-border {
-    background: linear-gradient(45deg, rgba(255, 0, 127, 0.3), rgba(255, 0, 127, 0.1), rgba(255, 0, 127, 0.3));
+    background: linear-gradient(45deg, rgba(229, 9, 20, 0.3), rgba(229, 9, 20, 0.1), rgba(229, 9, 20, 0.3));
     padding: 1px;
     border-radius: 16px;
   }

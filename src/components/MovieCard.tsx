@@ -67,7 +67,7 @@ export const MovieCard = ({
   return (
     <div
       onClick={handleCardClick}
-      className="cursor-pointer relative w-full h-[380px] sm:h-[480px] overflow-hidden rounded-2xl bg-gradient-to-br from-[#000000] to-[#0d0d0d] shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl flex flex-col"
+      className="cursor-pointer relative w-full h-[380px] sm:h-[480px] overflow-hidden rounded-2xl bg-gradient-to-br from-[#000000] to-[#0d0d0d] shadow-lg transition-all duration-300 hover:shadow-xl flex flex-col"
     >
       {/* Poster Section */}
       <div className="relative h-[270px] sm:h-[340px] overflow-hidden flex-shrink-0 p-2 sm:p-4">
@@ -75,6 +75,7 @@ export const MovieCard = ({
           <img
             src={posterUrl}
             alt={title}
+            loading="lazy"
             className="w-full h-full object-cover brightness-120 rounded-xl"
           />
         ) : (

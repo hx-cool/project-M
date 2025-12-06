@@ -1,0 +1,49 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                    NGROK SETUP INSTRUCTIONS                   ║
+╚═══════════════════════════════════════════════════════════════╝
+
+✅ ngrok is installed!
+
+FOLLOW THESE STEPS:
+
+1️⃣  START BACKEND SERVER
+   Open Terminal 1 and run:
+   npm run server
+
+2️⃣  START NGROK TUNNEL
+   Open Terminal 2 and run:
+   start-ngrok.bat
+   
+   OR manually:
+   ngrok http 3001
+
+3️⃣  COPY THE NGROK URL
+   You'll see something like:
+   
+   Forwarding  https://abc123.ngrok.io -> http://localhost:3001
+   
+   Copy the HTTPS URL (e.g., https://abc123.ngrok.io)
+
+4️⃣  UPDATE .env FILE
+   Open .env and change:
+   VITE_API_URL=https://abc123.ngrok.io
+   
+   (Replace with YOUR ngrok URL)
+
+5️⃣  START FRONTEND
+   Open Terminal 3 and run:
+   npm run dev
+
+6️⃣  SHARE WITH FRIEND
+   Send them the ngrok URL: https://abc123.ngrok.io
+   They can access from anywhere!
+
+═══════════════════════════════════════════════════════════════
+
+IMPORTANT NOTES:
+• Keep all 3 terminals running
+• Free tier: URL changes when you restart ngrok
+• Free tier: 40 requests/minute limit
+• Works from separate mobile hotspots ✓
+
+═══════════════════════════════════════════════════════════════
